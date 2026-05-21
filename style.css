@@ -1344,6 +1344,166 @@ body {
   line-height: 1.65;
 }
 
+/* ===== 기초의회 결과 ===== */
+.local-district-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.local-district-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  overflow: hidden;
+}
+.local-district-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.local-district-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+.local-seats-badge {
+  background: var(--accent);
+  color: #000;
+  font-size: 0.68rem;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+.local-cand-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 0;
+  font-size: 0.78rem;
+  transition: opacity 0.2s;
+}
+.local-cand-row.winner { opacity: 1; }
+.local-cand-row.loser  { opacity: 0.42; }
+.local-rank-num {
+  min-width: 26px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-align: center;
+}
+.local-rank-num.win { color: var(--success); }
+.local-rank-num.lose { color: var(--text-muted); }
+.local-party-pip {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.local-cand-name {
+  font-weight: 600;
+  min-width: 44px;
+  font-size: 0.8rem;
+}
+.local-party-label {
+  font-size: 0.68rem;
+  min-width: 24px;
+  flex-shrink: 0;
+}
+.local-votes-num {
+  min-width: 48px;
+  text-align: right;
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+.local-win-check {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 10px;
+  color: #000;
+  flex-shrink: 0;
+}
+.local-cutoff {
+  border-top: 2px dashed var(--danger);
+  margin: 4px 0 3px;
+  position: relative;
+  text-align: right;
+}
+.local-cutoff::after {
+  content: "당선 기준";
+  font-size: 0.62rem;
+  color: var(--danger);
+  position: absolute;
+  right: 0;
+  top: -9px;
+  background: var(--bg2);
+  padding: 0 3px;
+}
+
+/* ===== 기초의회 편집 UI ===== */
+.local-editor-district {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  margin-bottom: 8px;
+}
+.local-editor-district-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+.local-editor-district-name {
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--accent);
+}
+.local-editor-cand-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+.local-editor-party-sel {
+  width: 54px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 0.72rem;
+  padding: 2px 3px;
+}
+.local-editor-name-inp {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 0.72rem;
+  padding: 2px 5px;
+}
+.local-editor-votes-inp {
+  width: 58px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 0.72rem;
+  padding: 2px 4px;
+  text-align: right;
+}
+.local-editor-name-inp:focus,
+.local-editor-votes-inp:focus,
+.local-editor-party-sel:focus { outline: 1px solid var(--accent); }
+
 /* ===== 반응형 ===== */
 @media (max-width: 1100px) {
   #app-main { grid-template-columns: 260px 1fr; }

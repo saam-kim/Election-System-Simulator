@@ -136,6 +136,14 @@
       <p class="hint" id="mixed-ratio-desc">지역구 8석 + 비례 4석 = 총 12석</p>
     </section>
 
+    <!-- 기초의회 후보자 설정 -->
+    <section class="card hidden" id="card-local-settings">
+      <h2 class="card-title">기초의회 후보자 설정</h2>
+      <p class="hint">각 선거구의 출마 후보자, 소속 정당, 득표수를 입력하세요.</p>
+      <div id="local-district-inputs"></div>
+      <button id="btn-local-add-district" class="btn-secondary full-width" style="margin-top:6px">+ 선거구 추가</button>
+    </section>
+
     <!-- 고급 설정: 선거구 편집 -->
     <section class="card" id="card-advanced">
       <h2 class="card-title">
@@ -174,6 +182,7 @@
       <button class="tab-system" data-system="multi-plurality">중대선거구제<br><small>단순다수</small></button>
       <button class="tab-system" data-system="pr">비례<br>대표제</button>
       <button class="tab-system" data-system="mixed">병립형<br>혼합제</button>
+      <button class="tab-system" data-system="local" style="border-color:#f97316;color:#f97316">기초의회<br><small>후보자 중심</small></button>
       <div class="tab-row-spacer"></div>
       <button id="btn-show-compare" class="tab-compare-btn">📊 전체 비교</button>
       <button id="btn-toggle-right-panel" class="sidebar-tab-btn" title="오른쪽 패널 접기/펼치기">▶</button>
@@ -235,6 +244,13 @@
       <!-- 병립형 혼합제 탭 -->
       <div id="tab-mixed" class="tab-panel">
         <div id="mixed-results" class="results-area">
+          <p class="placeholder-text">시뮬레이션 실행 후 결과가 표시됩니다.</p>
+        </div>
+      </div>
+
+      <!-- 기초의회 탭 -->
+      <div id="tab-local" class="tab-panel">
+        <div id="local-results" class="results-area">
           <p class="placeholder-text">시뮬레이션 실행 후 결과가 표시됩니다.</p>
         </div>
       </div>

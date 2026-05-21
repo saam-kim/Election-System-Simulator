@@ -34,6 +34,53 @@ const DISTRICTS_DEFAULT = [
   [53, 28, 12,  7],  // D12 ★ A당 53% → 1차 당선
 ];
 
+// ── 기초의회 기본 데이터 (후보자 중심, 득표수 기반) ──
+// partyIdx: 0=A당, 1=B당, 2=C당, 3=D당
+const LOCAL_DISTRICTS_DEFAULT = [
+  {
+    name: '제1선거구', seats: 2,
+    candidates: [
+      { name: '김민준', partyIdx: 0, votes: 520 },
+      { name: '이서연', partyIdx: 0, votes: 390 },
+      { name: '박준혁', partyIdx: 1, votes: 480 },
+      { name: '최지우', partyIdx: 1, votes: 340 },
+      { name: '정하은', partyIdx: 2, votes: 270 },
+    ],
+  },
+  {
+    name: '제2선거구', seats: 3,
+    candidates: [
+      { name: '한지수', partyIdx: 0, votes: 610 },
+      { name: '임서준', partyIdx: 0, votes: 380 },
+      { name: '오준영', partyIdx: 1, votes: 550 },
+      { name: '윤채린', partyIdx: 1, votes: 290 },
+      { name: '강민아', partyIdx: 2, votes: 430 },
+      { name: '전민호', partyIdx: 3, votes: 140 },
+    ],
+  },
+  {
+    name: '제3선거구', seats: 2,
+    candidates: [
+      { name: '송예린', partyIdx: 0, votes: 460 },
+      { name: '신동현', partyIdx: 0, votes: 320 },
+      { name: '황지훈', partyIdx: 1, votes: 500 },
+      { name: '권민서', partyIdx: 2, votes: 310 },
+      { name: '백준호', partyIdx: 3, votes: 210 },
+    ],
+  },
+  {
+    name: '제4선거구', seats: 3,
+    candidates: [
+      { name: '홍태민', partyIdx: 0, votes: 580 },
+      { name: '남정우', partyIdx: 0, votes: 390 },
+      { name: '구하린', partyIdx: 1, votes: 520 },
+      { name: '변성호', partyIdx: 1, votes: 350 },
+      { name: '탁은지', partyIdx: 2, votes: 440 },
+      { name: '류지아', partyIdx: 3, votes: 130 },
+    ],
+  },
+];
+
 // 샘플 시나리오 (전국 득표율)
 const SCENARIOS = {
   A: { name: '1위 우세형',    votes: [45, 30, 15, 10, 0, 0] },
@@ -117,6 +164,21 @@ const SYSTEM_DESCS = {
       '<strong>봉쇄조항</strong> 미달 정당은 배분에서 제외',
     ],
   },
+  local: {
+    leftTitle: '중선거구제 (기초의회)', leftExample: '한국 기초의회',
+    leftItems: [
+      '한 선거구에서 <strong>여러 명</strong> 선출 (보통 2~4명)',
+      '유권자는 후보자 <strong>1명</strong>에게만 투표',
+      '득표 순위 N위까지 당선 — 같은 정당 후보끼리도 경쟁',
+    ],
+    rightTitle: '단순다수대표제 (득표 순위)',
+    rightExample: '한국 기초의회',
+    rightItems: [
+      '정당 공천 시 <strong>몇 명을 낼 것인가</strong>가 핵심 전략',
+      '후보를 너무 많이 내면 표가 분산되어 공멸 위험',
+      '후보를 너무 적게 내면 표가 남아도 의석 손실',
+    ],
+  },
   mixed: {
     leftTitle: '지역구 (소선거구)', leftExample: '한국 현행·일본',
     leftItems: [
@@ -193,6 +255,13 @@ const SYSTEM_QUESTIONS = {
     '소수 정당(D당)의 대표성이 다른 제도에 비해 얼마나 높아졌는가?',
     '"최대잔여 방식"과 "동트 방식"에서 결과가 달라지는 경우는?',
   ],
+  local: [
+    '같은 정당 후보끼리 경쟁하면 어떤 문제가 생기는가?',
+    '각 정당은 몇 명의 후보를 내는 것이 유리했는가?',
+    '소수 정당(C당)이 후보를 1명만 내서 당선된 이유는?',
+    'D당은 표를 얻었지만 왜 한 석도 얻지 못했는가?',
+    '득표수가 많은 정당이 반드시 의석도 많이 얻는가?',
+  ],
   mixed: [
     '지역구 결과와 비례 결과가 어떻게 다른가?',
     '지역구 의석 비율을 높이면 어떤 정당에 유리해지는가?',
@@ -222,6 +291,7 @@ let state = {
   results: null,                 // 계산 결과 캐시
   showDesc: true,                // 설명 카드 표시 여부
   activeSystem: 'fptp',          // 현재 선택된 선거제도
+  localDistricts: [],            // 기초의회 선거구 데이터
   showCompare: false,            // 전체 비교 모드
   mixedConstituencySeats: 8,     // 병립형 지역구 의석 수 (나머지는 비례)
   activeScenario: null,          // 현재 선택된 시나리오 키 (A/B/C/D 또는 null)
@@ -242,6 +312,11 @@ function initState() {
   }
   normalizeVotes();
   state.districts = DISTRICTS_DEFAULT.map(d => adjustDistrictToParties(d, state.numParties));
+  // 기초의회 데이터 딥카피
+  state.localDistricts = LOCAL_DISTRICTS_DEFAULT.map(d => ({
+    ...d,
+    candidates: d.candidates.map(c => ({ ...c })),
+  }));
 }
 
 // 선거구 데이터를 현재 정당 수에 맞게 조정
@@ -1171,6 +1246,189 @@ function renderMultiPlurality(result) {
   container.innerHTML = html;
 }
 
+/* ─────────────────────────────────────────────
+   기초의회 — 계산 / 렌더링 / 편집 UI
+───────────────────────────────────────────── */
+
+/**
+ * 기초의회 계산: 후보자 득표수 기반, 상위 N명 당선
+ */
+function calculateLocalCouncil() {
+  const n = state.numParties;
+  const partySeatTotals = new Array(n).fill(0);
+  const partyVoteTotals = new Array(n).fill(0);
+  const districtResults = [];
+
+  state.localDistricts.forEach(district => {
+    const ranked = district.candidates
+      .map(c => ({ ...c }))
+      .sort((a, b) => b.votes - a.votes || a.partyIdx - b.partyIdx);
+
+    ranked.forEach((c, rank) => {
+      c.rank = rank + 1;
+      c.isWinner = rank < district.seats;
+      if (c.isWinner) partySeatTotals[c.partyIdx]++;
+      partyVoteTotals[c.partyIdx] += c.votes;
+    });
+
+    districtResults.push({ name: district.name, seats: district.seats, ranked });
+  });
+
+  const totalSeats = districtResults.reduce((a, d) => a + d.seats, 0);
+  const totalVotes = partyVoteTotals.reduce((a, b) => a + b, 0);
+
+  return { districtResults, partySeatTotals, partyVoteTotals, totalSeats, totalVotes, method: 'local' };
+}
+
+/**
+ * 기초의회 결과 렌더링
+ */
+function renderLocalCouncil(result) {
+  const container = document.getElementById('local-results');
+  if (!container) return;
+  const parties = state.parties;
+  const { districtResults, partySeatTotals, partyVoteTotals, totalSeats, totalVotes } = result;
+  let html = '';
+
+  html += `<div class="section-title">📍 선거구별 후보자 득표 순위</div>`;
+  html += `<div class="local-district-grid">`;
+
+  districtResults.forEach(dr => {
+    const maxVotes = dr.ranked[0]?.votes || 1;
+    html += `<div class="local-district-card">
+      <div class="local-district-header">
+        <span class="local-district-name">${dr.name}</span>
+        <span class="local-seats-badge">${dr.seats}석 배분</span>
+      </div>`;
+
+    dr.ranked.forEach((c, rank) => {
+      const party = parties[c.partyIdx] || { name: '?', color: '#888' };
+      const barW  = (c.votes / maxVotes) * 100;
+      if (rank === dr.seats) html += `<div class="local-cutoff"></div>`;
+      html += `<div class="local-cand-row ${c.isWinner ? 'winner' : 'loser'}">
+        <span class="local-rank-num ${c.isWinner ? 'win' : 'lose'}">${rank + 1}위</span>
+        <span class="local-party-pip" style="background:${party.color}"></span>
+        <span class="local-cand-name">${c.name}</span>
+        <span class="local-party-label" style="color:${party.color}">${party.name}</span>
+        <div class="mini-bar-wrap" style="flex:1;height:8px">
+          <div class="mini-bar-fill" style="width:${barW}%;background:${party.color};opacity:${c.isWinner ? 1 : 0.4}"></div>
+        </div>
+        <span class="local-votes-num">${c.votes.toLocaleString()}표</span>
+        ${c.isWinner ? `<span class="local-win-check" style="background:${party.color}">✓</span>` : ''}
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  html += `</div>`;
+
+  html += `<div class="section-title">💺 정당별 의석 · 득표 요약</div>`;
+  html += renderSeatChart(partySeatTotals, parties);
+
+  html += `<table class="result-table"><thead><tr>
+    <th>정당</th><th>총 득표수</th><th>득표율</th><th>의석 수</th><th>의석률</th><th>차이</th>
+  </tr></thead><tbody>`;
+  parties.forEach((p, i) => {
+    if (!partyVoteTotals[i] && !partySeatTotals[i]) return;
+    const vp   = totalVotes > 0 ? (partyVoteTotals[i] / totalVotes * 100) : 0;
+    const sp   = totalSeats > 0 ? (partySeatTotals[i] / totalSeats * 100) : 0;
+    const diff = sp - vp;
+    const dCls = diff > 1 ? 'diff-positive' : diff < -1 ? 'diff-negative' : 'diff-zero';
+    html += `<tr>
+      <td><div class="party-cell">${colorDot(p.color)}${p.name}</div></td>
+      <td>${partyVoteTotals[i].toLocaleString()}표</td>
+      <td>${fmt(vp)}%</td>
+      <td><strong>${partySeatTotals[i]}석</strong></td>
+      <td>${fmt(sp)}%</td>
+      <td class="${dCls}">${diff > 0 ? '+' : ''}${fmt(diff)}%p</td>
+    </tr>`;
+  });
+  html += `</tbody></table>`;
+
+  html += `<div class="interpretation"><ul>
+    <li>같은 정당 후보끼리 같은 선거구에서 경쟁 — 동료가 곧 경쟁자입니다.</li>
+    <li>후보를 너무 많이 내면 표가 분산되어 공멸, 너무 적게 내면 의석 기회를 놓칩니다.</li>
+    <li><strong>"몇 명을 공천할 것인가"</strong>가 정당 전략의 핵심입니다.</li>
+    <li>이것이 우리나라 기초의회 지역구 선거의 실제 방식입니다.</li>
+  </ul></div>`;
+
+  container.innerHTML = html;
+}
+
+/**
+ * 기초의회 후보자 편집 UI
+ */
+function renderLocalCouncilInputs() {
+  const container = document.getElementById('local-district-inputs');
+  if (!container) return;
+  let html = '';
+
+  state.localDistricts.forEach((district, di) => {
+    html += `<div class="local-editor-district">
+      <div class="local-editor-district-head">
+        <span class="local-editor-district-name">${district.name}</span>
+        <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
+          <span style="font-size:0.7rem;color:var(--text-muted)">배분:</span>
+          ${[1,2,3,4].map(n => `<button class="btn-opt${district.seats===n?' active':''}" data-ld-di="${di}" data-ld-seats="${n}">${n}석</button>`).join('')}
+          <button class="btn-small" data-ld-del-dist="${di}" style="color:var(--danger)">구 삭제</button>
+        </div>
+      </div>`;
+
+    district.candidates.forEach((c, ci) => {
+      html += `<div class="local-editor-cand-row">
+        <select class="local-editor-party-sel" data-ld-di="${di}" data-ld-ci="${ci}" data-ld-field="partyIdx">
+          ${state.parties.map((p, pi) => `<option value="${pi}"${c.partyIdx===pi?' selected':''}>${p.name}</option>`).join('')}
+        </select>
+        <input class="local-editor-name-inp" type="text" data-ld-di="${di}" data-ld-ci="${ci}" data-ld-field="name" value="${c.name}" maxlength="8" />
+        <input class="local-editor-votes-inp" type="number" data-ld-di="${di}" data-ld-ci="${ci}" data-ld-field="votes" value="${c.votes}" min="0" max="99999" />
+        <span style="font-size:0.7rem;color:var(--text-muted)">표</span>
+        <button class="btn-small" data-ld-del-cand-di="${di}" data-ld-del-cand-ci="${ci}" style="color:var(--danger)">✕</button>
+      </div>`;
+    });
+
+    html += `<button class="btn-secondary full-width" data-ld-add-cand="${di}" style="font-size:0.75rem;padding:4px;margin-top:3px">+ 후보 추가</button>
+    </div>`;
+  });
+
+  container.innerHTML = html;
+
+  container.querySelectorAll('[data-ld-seats]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.localDistricts[+btn.dataset.ldDi].seats = +btn.dataset.ldSeats;
+      renderLocalCouncilInputs();
+    });
+  });
+  container.querySelectorAll('[data-ld-field]').forEach(el => {
+    const update = () => {
+      const di = +el.dataset.ldDi, ci = +el.dataset.ldCi, f = el.dataset.ldField;
+      state.localDistricts[di].candidates[ci][f] =
+        f === 'partyIdx' ? +el.value : f === 'votes' ? (parseInt(el.value) || 0) : el.value;
+    };
+    el.addEventListener('change', update);
+    if (el.tagName === 'INPUT') el.addEventListener('input', update);
+  });
+  container.querySelectorAll('[data-ld-del-dist]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (state.localDistricts.length <= 1) { showToast('선거구는 최소 1개 필요합니다.'); return; }
+      state.localDistricts.splice(+btn.dataset.ldDelDist, 1);
+      renderLocalCouncilInputs();
+    });
+  });
+  container.querySelectorAll('[data-ld-del-cand-ci]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const di = +btn.dataset.ldDelCandDi, ci = +btn.dataset.ldDelCandCi;
+      if (state.localDistricts[di].candidates.length <= 1) { showToast('후보는 최소 1명 필요합니다.'); return; }
+      state.localDistricts[di].candidates.splice(ci, 1);
+      renderLocalCouncilInputs();
+    });
+  });
+  container.querySelectorAll('[data-ld-add-cand]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.localDistricts[+btn.dataset.ldAddCand].candidates.push({ name: '신규후보', partyIdx: 0, votes: 0 });
+      renderLocalCouncilInputs();
+    });
+  });
+}
+
 /**
  * 병립형 혼합제 결과 렌더링
  * 지역구 지도 + 비례 배분 + 합산 결과
@@ -1227,6 +1485,7 @@ function renderMixed(result) {
 function getActiveTabId() {
   if (state.showCompare) return 'tab-compare';
   const map = {
+    local:            'tab-local',
     fptp:             'tab-fptp',
     majority:         'tab-majority',
     multi:            'tab-multi',
@@ -1239,6 +1498,7 @@ function getActiveTabId() {
 
 // 시스템 키 → 표시 이름
 const SYSTEM_NAMES = {
+  local:            '기초의회 선거 (중선거구 + 단순다수 / 후보자 중심)',
   fptp:             '소선거구제 + 단순다수대표제',
   majority:         '소선거구제 + 절대다수대표제',
   multi:            '중대선거구제 (비례배분)',
@@ -1304,6 +1564,14 @@ function updateActiveTab() {
   // 병립형 설정 카드
   const mixedCard = document.getElementById('card-mixed-settings');
   if (mixedCard) mixedCard.classList.toggle('hidden', state.activeSystem !== 'mixed');
+
+  // 기초의회 편집 카드
+  const localCard = document.getElementById('card-local-settings');
+  if (localCard) {
+    const show = state.activeSystem === 'local';
+    localCard.classList.toggle('hidden', !show);
+    if (show) renderLocalCouncilInputs();
+  }
 
   // 오른쪽 패널
   if (state.results) {
@@ -1524,7 +1792,8 @@ function runSimulation() {
   const multiPlurality = calculateBlockVoting();
   const pr             = calculatePR();
   const mixed          = calculateMixed();
-  state.results = { fptp, majority, multi, 'multi-plurality': multiPlurality, pr, mixed };
+  const local          = calculateLocalCouncil();
+  state.results = { fptp, majority, multi, 'multi-plurality': multiPlurality, pr, mixed, local };
 
   // 렌더링 (모든 패널을 백그라운드 계산)
   renderFPTP(fptp);
@@ -1532,6 +1801,7 @@ function runSimulation() {
   renderMulti(multi);
   renderMultiPlurality(multiPlurality);
   renderMixed(mixed);
+  renderLocalCouncil(local);
   renderPR(pr);
   renderCompare(state.results);
 
@@ -1813,6 +2083,19 @@ function bindEvents() {
       el.classList.add('hidden');
       btn.textContent = '펼치기 ▼';
     }
+  });
+
+  // ── 기초의회 선거구 추가 ──
+  document.getElementById('btn-local-add-district').addEventListener('click', () => {
+    const newIdx = state.localDistricts.length + 1;
+    state.localDistricts.push({
+      name: `제${newIdx}선거구`, seats: 2,
+      candidates: [
+        { name: '후보1', partyIdx: 0, votes: 0 },
+        { name: '후보2', partyIdx: 1, votes: 0 },
+      ],
+    });
+    renderLocalCouncilInputs();
   });
 
   // ── 병립형 지역구 의석 수 설정 ──
