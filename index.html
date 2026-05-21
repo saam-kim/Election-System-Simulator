@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>같은 표, 다른 의석: 선거제도 시뮬레이터</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ===== 헤더 ===== -->
+<header id="app-header">
+  <div class="header-left">
+    <h1 id="main-title">같은 표, 다른 의석</h1>
+    <p class="subtitle">선거제도 시뮬레이터</p>
+  </div>
+  <div class="header-meta">
+    <span class="meta-item">🏛 국가: <strong id="display-nation">세종국</strong></span>
+    <span class="meta-item">💺 전체 의석: <strong id="display-seats">12석</strong></span>
+    <span class="meta-item">🎯 정당 수: <strong id="display-parties">4개</strong></span>
+    <span class="meta-item">📋 현재 제도: <strong id="display-system">—</strong></span>
+  </div>
+  <div class="header-buttons">
+    <button id="btn-toggle-sidebar" class="btn-icon" title="사이드바 접기/펼치기">☰</button>
+    <button id="btn-fullscreen" class="btn-icon" title="전체화면">⛶</button>
+    <button id="btn-toggle-desc" class="btn-icon" title="설명 숨기기">👁</button>
+    <button id="btn-hide-results" class="btn-icon" title="결과 가리기 / 공개">🔒</button>
+    <button id="btn-lesson-guide" class="btn-icon" title="시뮬레이터 사용법">📖</button>
+    <button id="btn-copy-result" class="btn-icon" title="결과 복사">📋</button>
+  </div>
+</header>
+
+<!-- ===== 메인 레이아웃 ===== -->
+<main id="app-main">
+
+  <!-- ===== 왼쪽 패널: 설정 ===== -->
+  <aside id="panel-left">
+
+    <!-- 기본 설정 (접기/펼치기) -->
+    <section class="card" id="card-basic-settings">
+      <h2 class="card-title">
+        ⚙️ 기본 설정
+        <button id="btn-toggle-basic" class="btn-small">접기 ▲</button>
+      </h2>
+      <div id="basic-settings-body">
+        <div class="form-row">
+          <label>국가명</label>
+          <input type="text" id="input-nation" value="세종국" maxlength="10" />
+        </div>
+        <div class="form-row">
+          <label>전체 의석 수</label>
+          <div class="btn-group-small">
+            <button class="btn-opt" data-seats="5">5</button>
+            <button class="btn-opt" data-seats="10">10</button>
+            <button class="btn-opt active" data-seats="12">12</button>
+            <button class="btn-opt" data-seats="20">20</button>
+          </div>
+          <input type="number" id="input-seats-custom" min="2" max="100" placeholder="직접입력" />
+        </div>
+        <div class="form-row">
+          <label>정당 수</label>
+          <div class="btn-group-small">
+            <button class="btn-opt" data-parties="2">2</button>
+            <button class="btn-opt" data-parties="3">3</button>
+            <button class="btn-opt active" data-parties="4">4</button>
+            <button class="btn-opt" data-parties="5">5</button>
+            <button class="btn-opt" data-parties="6">6</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 시나리오 선택 -->
+    <section class="card" id="card-scenarios">
+      <h2 class="card-title">시나리오 선택</h2>
+      <div class="scenario-buttons">
+        <button class="btn-scenario" data-scenario="A">A: 1위 우세형</button>
+        <button class="btn-scenario" data-scenario="B">B: 박빙 다당형</button>
+        <button class="btn-scenario" data-scenario="C">C: 소수 과소형</button>
+        <button class="btn-scenario" data-scenario="D">D: 극단 분산형</button>
+        <button class="btn-scenario" data-scenario="E">E: 2016 총선</button>
+        <button class="btn-scenario" data-scenario="F">F: 2020 총선</button>
+      </div>
+      <!-- 시나리오 수업 포인트 -->
+      <div id="scenario-desc" class="scenario-desc"></div>
+      <button id="btn-reset" class="btn-secondary full-width" style="margin-top:6px">초기화</button>
+    </section>
+
+    <!-- 시뮬레이션 실행 -->
+    <button id="btn-run" class="btn-primary full-width">▶ 시뮬레이션 실행</button>
+
+    <!-- 정당 설정 -->
+    <section class="card" id="card-party-settings">
+      <h2 class="card-title">🗳 정당 득표율 설정</h2>
+      <div id="party-inputs">
+        <!-- JS로 생성 -->
+      </div>
+      <div id="vote-total-display" class="vote-total">
+        합계: <span id="vote-total-num">0</span>%
+        <span id="vote-total-status"></span>
+      </div>
+    </section>
+
+    <!-- 비례대표 옵션 -->
+    <section class="card" id="card-pr-options">
+      <h2 class="card-title">📊 비례대표 옵션</h2>
+      <div class="form-row">
+        <label>배분 방식</label>
+        <select id="select-pr-method">
+          <option value="largest-remainder">최대잔여 방식</option>
+          <option value="dhondt">동트 방식</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>봉쇄조항</label>
+        <div class="btn-group-small">
+          <button class="btn-opt active" data-threshold="0">없음</button>
+          <button class="btn-opt" data-threshold="3">3%</button>
+          <button class="btn-opt" data-threshold="5">5%</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SNTV 후보자 설정 (중대선거구제 + SNTV 선택 시에만 표시) -->
+    <!-- 병립형 혼합제 설정 (mixed 탭 선택 시 표시) -->
+    <section class="card hidden" id="card-mixed-settings">
+      <h2 class="card-title">병립형 설정</h2>
+      <div class="form-row">
+        <label>지역구 의석 수</label>
+        <div class="btn-group-small">
+          <button class="btn-opt" data-mixed-cons="6">6석</button>
+          <button class="btn-opt active" data-mixed-cons="8">8석</button>
+          <button class="btn-opt" data-mixed-cons="10">10석</button>
+        </div>
+      </div>
+      <p class="hint" id="mixed-ratio-desc">지역구 8석 + 비례 4석 = 총 12석</p>
+    </section>
+
+    <!-- 고급 설정: 선거구 편집 -->
+    <section class="card" id="card-advanced">
+      <h2 class="card-title">
+        🗺 선거구 설정
+        <button id="btn-toggle-districts" class="btn-small">펼치기 ▼</button>
+      </h2>
+      <div id="district-editor" class="hidden">
+        <p class="hint">각 선거구의 정당별 득표율을 입력하세요. (합계=100%)</p>
+        <div id="district-inputs">
+          <!-- JS로 생성 -->
+        </div>
+      </div>
+    </section>
+
+  </aside>
+
+  <!-- ===== 중앙: 탭 + 결과 ===== -->
+  <section id="panel-center">
+
+    <!-- 결과 가리기 오버레이 -->
+    <div id="result-cover" class="hidden">
+      <div class="result-cover-box">
+        <div class="result-cover-icon">🔒</div>
+        <p class="result-cover-text">결과가 가려져 있습니다</p>
+        <p class="result-cover-hint">학생들이 예측한 후 공개하세요</p>
+        <button id="btn-reveal-results" class="btn-primary" style="font-size:1.1rem;padding:12px 32px">▶ 결과 공개</button>
+      </div>
+    </div>
+
+    <!-- 선거제도 탭 (단일 행) -->
+    <nav class="tab-row" id="system-tabs">
+      <button id="btn-toggle-left-panel" class="sidebar-tab-btn" title="왼쪽 패널 접기/펼치기">◀</button>
+      <button class="tab-system active" data-system="fptp">소선거구제<br><small>단순다수</small></button>
+      <button class="tab-system" data-system="majority">소선거구제<br><small>절대다수</small></button>
+      <button class="tab-system" data-system="multi">중대선거구제<br><small>비례배분</small></button>
+      <button class="tab-system" data-system="multi-plurality">중대선거구제<br><small>단순다수</small></button>
+      <button class="tab-system" data-system="pr">비례<br>대표제</button>
+      <button class="tab-system" data-system="mixed">병립형<br>혼합제</button>
+      <div class="tab-row-spacer"></div>
+      <button id="btn-show-compare" class="tab-compare-btn">📊 전체 비교</button>
+      <button id="btn-toggle-right-panel" class="sidebar-tab-btn" title="오른쪽 패널 접기/펼치기">▶</button>
+    </nav>
+
+    <!-- 현재 선택 제도 배너 -->
+    <div id="current-system-banner">
+      현재 선거제도: <strong id="banner-system">소선거구제 + 단순다수대표제</strong>
+    </div>
+
+    <!-- 2열 설명 패널 (JS로 내용 채움) -->
+    <div id="desc-panel" class="desc-panel">
+      <div class="desc-col" id="desc-col-district">
+        <div class="desc-col-header" id="desc-district-header">소선거구제</div>
+        <ol id="desc-district-list"></ol>
+      </div>
+      <div class="desc-divider"></div>
+      <div class="desc-col" id="desc-col-method">
+        <div class="desc-col-header" id="desc-method-header">단순다수대표제</div>
+        <ol id="desc-method-list"></ol>
+      </div>
+      <!-- 접기 버튼 -->
+      <button id="btn-toggle-desc-panel" class="desc-panel-toggle" title="개념 패널 접기/펼치기">▲</button>
+    </div>
+
+    <!-- 탭 콘텐츠 (설명 블록 없이 결과만) -->
+    <div id="tab-content">
+
+      <div id="tab-fptp" class="tab-panel active">
+        <div id="fptp-results" class="results-area">
+          <p class="placeholder-text">시뮬레이션 실행 후 결과가 표시됩니다.</p>
+        </div>
+      </div>
+
+      <div id="tab-majority" class="tab-panel">
+        <div id="majority-results" class="results-area">
+          <p class="placeholder-text">시뮬레이션 실행 후 결과가 표시됩니다.</p>
+        </div>
+      </div>
+
+      <div id="tab-pr" class="tab-panel">
+        <div id="pr-results" class="results-area">
+          <p class="placeholder-text">시뮬레이션 실행 후 결과가 표시됩니다.</p>
+        </div>
+      </div>
+
+      <div id="tab-multi" class="tab-panel">
+        <div id="multi-results" class="results-area">
+          <p class="placeholder-text">시뮬레이션 실행 후 결과가 표시됩니다.</p>
+        </div>
+      </div>
+
+      <div id="tab-multi-plurality" class="tab-panel">
+        <div id="multi-plurality-results" class="results-area">
+          <p class="placeholder-text">시뮬레이션 실행 후 결과가 표시됩니다.</p>
+        </div>
+      </div>
+
+      <!-- 병립형 혼합제 탭 -->
+      <div id="tab-mixed" class="tab-panel">
+        <div id="mixed-results" class="results-area">
+          <p class="placeholder-text">시뮬레이션 실행 후 결과가 표시됩니다.</p>
+        </div>
+      </div>
+
+      <div id="tab-unsupported" class="tab-panel">
+        <div class="interpretation" style="border-color:var(--warning);margin:16px 0">
+          <ul>
+            <li style="color:var(--warning);font-weight:700">⚠️ 이 조합은 수업 시뮬레이터에서 지원하지 않습니다.</li>
+            <li>중대선거구제 + 절대다수대표제는 실제로도 거의 사용되지 않습니다.</li>
+            <li>다른 조합을 선택해 보세요.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div id="tab-compare" class="tab-panel">
+        <div class="compare-headline">
+          <span class="same-votes">같은 표</span>
+          <span class="arrow-big">→</span>
+          <span class="diff-seats">다른 의석</span>
+        </div>
+        <div id="compare-results" class="results-area">
+          <p class="placeholder-text">시뮬레이션 실행 후 결과가 표시됩니다.</p>
+        </div>
+      </div>
+
+    </div><!-- /tab-content -->
+
+  </section>
+
+  <!-- ===== 오른쪽 패널: 의석 결과 요약 ===== -->
+  <aside id="panel-right">
+
+    <section class="card" id="card-seat-summary">
+      <h2 class="card-title">💺 의석 배분 결과</h2>
+      <div id="seat-summary-content">
+        <p class="placeholder-text">결과 없음</p>
+      </div>
+    </section>
+
+    <section class="card" id="card-distortion">
+      <h2 class="card-title">📐 대표성 지표</h2>
+      <div id="distortion-content">
+        <p class="placeholder-text">결과 없음</p>
+      </div>
+    </section>
+
+    <!-- 수업 발문 카드 (맥락 연동, 항상 표시) -->
+    <section class="card" id="card-questions">
+      <h2 class="card-title">지금 물어볼 수 있는 질문</h2>
+      <div id="question-list">
+        <!-- JS로 제도별 발문 자동 채움 -->
+      </div>
+    </section>
+
+  </aside>
+
+</main>
+
+<!-- ===== 선거구 지도 확대 모달 ===== -->
+<div id="district-modal" class="district-modal hidden">
+  <div class="district-modal-inner">
+    <div class="district-modal-header">
+      <span id="district-modal-title">선거구별 결과</span>
+      <button id="btn-district-modal-close" class="scenario-modal-close">✕ 닫기</button>
+    </div>
+    <div class="district-modal-map" id="district-modal-map">
+      <!-- JS로 채움 -->
+    </div>
+    <div class="district-modal-foot">
+      <button id="btn-district-reveal" class="btn-primary" style="font-size:1rem;padding:11px 32px">
+        💺 의석 배분 &amp; 해설 보기
+      </button>
+    </div>
+    <div class="district-modal-extra hidden" id="district-modal-extra">
+      <!-- 의석 배분 + 결과표 + 해설 -->
+    </div>
+  </div>
+</div>
+
+<!-- ===== 사용법 가이드 모달 ===== -->
+<div id="lesson-guide-modal" class="scenario-modal hidden">
+  <div class="scenario-modal-box" style="max-width:680px">
+    <div class="scenario-modal-header">
+      <span>📖 시뮬레이터 사용법</span>
+      <button id="btn-lesson-guide-close" class="scenario-modal-close">✕ 닫기</button>
+    </div>
+    <div class="scenario-modal-body" style="gap:16px">
+
+      <div class="guide-step">
+        <div class="guide-step-num">1</div>
+        <div>
+          <strong>시나리오 선택</strong>
+          <p>왼쪽 패널에서 시나리오(A~D)를 선택하면 정당별 득표율이 자동으로 설정됩니다.<br>
+          직접 득표율을 조정하고 싶으면 정당 설정 입력창에서 수정하세요.</p>
+        </div>
+      </div>
+
+      <div class="guide-step">
+        <div class="guide-step-num">2</div>
+        <div>
+          <strong>시뮬레이션 실행</strong>
+          <p>▶ 시뮬레이션 실행 버튼을 누르면 모든 제도의 결과가 한 번에 계산됩니다.<br>
+          실행 전 🔒 <strong>결과 가리기</strong>를 누르면 학생들이 먼저 예측할 수 있습니다.</p>
+        </div>
+      </div>
+
+      <div class="guide-step">
+        <div class="guide-step-num">3</div>
+        <div>
+          <strong>선거제도 탐색</strong>
+          <p>상단 탭에서 <strong>선거구제</strong>와 <strong>대표 결정 방식</strong>을 바꿔가며 결과를 비교하세요.<br>
+          📊 <strong>전체 비교</strong>를 누르면 모든 제도를 한 화면에서 비교할 수 있습니다.</p>
+        </div>
+      </div>
+
+      <div class="guide-step">
+        <div class="guide-step-num">4</div>
+        <div>
+          <strong>발문 활용</strong>
+          <p>오른쪽 패널 하단 <strong>"지금 물어볼 수 있는 질문"</strong>이 현재 탭에 맞게 자동으로 바뀝니다.<br>
+          탭을 바꿀 때마다 발문도 달라지니 바로 활용하세요.</p>
+        </div>
+      </div>
+
+      <div class="guide-step">
+        <div class="guide-step-num">5</div>
+        <div>
+          <strong>수업 화면 정리</strong>
+          <p>◀ ▶ 버튼으로 사이드바를 접으면 중앙 결과 화면이 넓어집니다.<br>
+          ▲ 버튼으로 개념 패널을 접고, ⛶ 버튼으로 전체화면을 활용하세요.</p>
+        </div>
+      </div>
+
+      <div style="background:var(--bg3);border-radius:var(--radius);padding:12px 16px;font-size:0.88rem;color:var(--text-muted)">
+        💡 <strong>권장 수업 흐름 (약 20분)</strong>: 시나리오 A 선택 → 소선거구+단순다수 결과 확인 → 전체 비교 탭으로 이동 → 발문 토론
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== 시나리오 팝업 (전면 오버레이) ===== -->
+<div id="scenario-modal" class="scenario-modal hidden">
+  <div class="scenario-modal-box">
+    <div class="scenario-modal-header">
+      <span id="modal-scenario-label">시나리오 A</span>
+      <button id="btn-modal-close" class="scenario-modal-close">✕ 닫기</button>
+    </div>
+    <div class="scenario-modal-body">
+      <div class="scenario-modal-votes" id="modal-votes">
+        <!-- JS로 정당별 득표율 막대 채움 -->
+      </div>
+      <div class="scenario-modal-point" id="modal-point">
+        <!-- JS로 수업 포인트 채움 -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 토스트 메시지 ===== -->
+<div id="toast" class="toast hidden"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

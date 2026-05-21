@@ -1,0 +1,1359 @@
+/* ===================================================
+   선거제도 시뮬레이터 — 전자칠판 최적화 스타일
+   =================================================== */
+
+:root {
+  --bg: #0f172a;
+  --bg2: #1e293b;
+  --bg3: #334155;
+  --border: #475569;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --accent: #38bdf8;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --radius: 10px;
+  --radius-sm: 6px;
+
+  /* 정당 색상 (최대 6개) */
+  --c0: #ef4444; /* A당 — 빨강 */
+  --c1: #3b82f6; /* B당 — 파랑 */
+  --c2: #22c55e; /* C당 — 초록 */
+  --c3: #f59e0b; /* D당 — 주황 */
+  --c4: #a855f7; /* E당 — 보라 */
+  --c5: #ec4899; /* F당 — 분홍 */
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-size: 15px;
+  overflow-x: hidden;
+}
+
+/* ===== 헤더 ===== */
+#app-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  background: var(--bg2);
+  border-bottom: 2px solid var(--accent);
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-left h1 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -0.5px;
+}
+.header-left .subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.header-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  flex: 1;
+  justify-content: center;
+}
+.meta-item {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  background: var(--bg3);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.meta-item strong { color: var(--text); }
+
+.header-buttons { display: flex; gap: 8px; }
+.btn-icon {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+.btn-icon:hover { background: var(--border); }
+
+/* ===== 메인 레이아웃 ===== */
+#app-main {
+  display: grid;
+  grid-template-columns: 280px 1fr 260px;
+  gap: 0;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ===== 패널 공통 ===== */
+#panel-left, #panel-right {
+  background: var(--bg2);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  max-height: calc(100vh - 65px);
+}
+#panel-left { border-right: 1px solid var(--border); }
+#panel-right { border-left: 1px solid var(--border); }
+
+#panel-center {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: calc(100vh - 65px);
+}
+
+/* ===== 카드 ===== */
+.card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+}
+.card-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* ===== 폼 ===== */
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+.form-row label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.form-row input[type="text"],
+.form-row input[type="number"],
+.form-row select {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  padding: 5px 8px;
+  font-size: 0.85rem;
+  width: 100%;
+}
+.form-row input:focus, .form-row select:focus {
+  outline: 2px solid var(--accent);
+  border-color: transparent;
+}
+
+/* ===== 버튼 그룹 ===== */
+.btn-group-small {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.btn-opt {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.15s;
+}
+.btn-opt.active, .btn-opt:hover {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+/* ===== 시나리오 버튼 ===== */
+.scenario-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  margin-bottom: 4px;
+}
+.btn-scenario {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 7px 6px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.78rem;
+  text-align: center;
+  transition: all 0.15s;
+  line-height: 1.3;
+}
+.btn-scenario:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+
+/* ===== 주요 버튼 ===== */
+.btn-primary {
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: var(--radius);
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.btn-primary:hover { opacity: 0.85; }
+
+.btn-secondary {
+  background: var(--bg2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-secondary:hover { background: var(--border); }
+
+.btn-small {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.btn-small:hover { color: var(--accent); }
+
+.full-width { width: 100%; }
+
+/* ===== 정당 입력 ===== */
+.party-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.party-color-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  cursor: pointer;
+  border: 2px solid rgba(255,255,255,0.2);
+}
+.party-name-input {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  padding: 4px 6px;
+  font-size: 0.82rem;
+}
+.party-vote-input {
+  width: 52px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  padding: 4px 4px;
+  font-size: 0.82rem;
+  text-align: right;
+}
+.party-vote-input:focus, .party-name-input:focus {
+  outline: 2px solid var(--accent);
+}
+.party-pct-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  width: 14px;
+}
+
+/* 득표율 합계 표시 */
+.vote-total {
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vote-total.ok { color: var(--success); }
+.vote-total.over { color: var(--danger); }
+.vote-total.under { color: var(--warning); }
+
+/* ===== 단일 행 선거제도 탭 ===== */
+.tab-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 10px;
+  background: var(--bg2);
+  border-bottom: 2px solid var(--border);
+  flex-shrink: 0;
+  overflow-x: auto;
+}
+.tab-row-spacer { flex: 1; min-width: 6px; }
+
+.tab-system {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 6px 11px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.3;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.tab-system small {
+  display: block;
+  font-size: 0.63rem;
+  font-weight: 400;
+  opacity: 0.75;
+}
+.tab-system.active {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+  font-weight: 700;
+}
+.tab-system.active small { opacity: 0.85; }
+.tab-system:hover:not(.active) {
+  background: var(--border);
+  color: var(--text);
+}
+
+/* 전체 비교 버튼 */
+.tab-compare-btn {
+  background: rgba(251,191,36,0.08);
+  border: 1px solid #fbbf24;
+  color: #fbbf24;
+  padding: 6px 11px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: all 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.tab-compare-btn.active { background: #fbbf24; color: #000; }
+.tab-compare-btn:hover { background: rgba(251,191,36,0.18); }
+
+/* 현재 선택 제도 배너 */
+#current-system-banner {
+  background: linear-gradient(90deg, var(--bg3) 0%, var(--bg2) 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 5px 14px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+#current-system-banner strong { color: var(--accent); font-size: 0.88rem; }
+
+/* ===== 2열 설명 패널 ===== */
+.desc-panel {
+  display: flex;
+  background: var(--bg2);
+  border-bottom: 2px solid var(--border);
+  flex-shrink: 0;
+}
+.desc-panel.hidden { display: none; }
+
+.desc-col {
+  flex: 1;
+  padding: 10px 16px 12px;
+}
+.desc-divider {
+  width: 1px;
+  background: var(--border);
+  flex-shrink: 0;
+  margin: 8px 0;
+}
+.desc-col-header {
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-align: center;
+  padding: 5px 0 8px;
+  margin-bottom: 6px;
+  border-bottom: 2px solid var(--border);
+  letter-spacing: -0.3px;
+}
+#desc-col-district .desc-col-header { color: var(--accent); }
+#desc-col-method   .desc-col-header { color: #a78bfa; }
+
+.desc-col ol {
+  list-style: decimal;
+  padding-left: 18px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+}
+.desc-col ol li { margin-bottom: 1px; }
+.desc-col ol li strong { color: var(--text); }
+
+/* 전체비교 모드에서는 패널 중앙 정렬로 */
+.desc-panel.compare-mode .desc-col-header { color: #fbbf24; }
+.desc-panel.compare-mode { justify-content: center; }
+.desc-panel.compare-mode .desc-divider { display: none; }
+.desc-panel.compare-mode .desc-col:last-child { display: none; }
+.desc-panel.compare-mode .desc-col { max-width: 480px; text-align: center; }
+.desc-panel.compare-mode ol { text-align: left; }
+
+/* 개념 패널 접힘 */
+.desc-panel.collapsed .desc-col,
+.desc-panel.collapsed .desc-divider {
+  display: none;
+}
+.desc-panel.collapsed {
+  padding: 0;
+}
+/* 접기/펼치기 버튼 */
+.desc-panel-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.desc-panel-toggle:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+.desc-panel { position: relative; } /* 버튼 절대 위치 기준 */
+.desc-panel.collapsed .desc-panel-toggle { top: 50%; transform: translateY(-50%); }
+/* 접힌 상태에서 패널은 최소 높이만 */
+.desc-panel.collapsed {
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== 탭 패널 ===== */
+#tab-content { flex: 1; overflow-y: auto; }
+.tab-panel { display: none; padding: 16px; }
+.tab-panel.active { display: block; }
+
+/* ===== 결과 영역 ===== */
+.results-area { min-height: 200px; }
+.placeholder-text { color: var(--text-muted); font-size: 0.85rem; padding: 20px 0; text-align: center; }
+
+/* ===== 선거구 지도 — 3열 × 4행 고정 ===== */
+.district-map {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin-bottom: 14px;
+}
+
+/* 개별 선거구 카드 */
+.district-card {
+  background: var(--bg2);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 7px 7px 5px;
+  font-size: 0.75rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  position: relative;
+  min-height: 90px;
+}
+.district-card.winner-glow {
+  box-shadow: 0 0 10px var(--winner-color, var(--accent));
+}
+/* 당선 정당 색을 배경에 은은하게 표현 */
+.district-card-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: calc(var(--radius) - 2px);
+  opacity: 0.08;
+  pointer-events: none;
+}
+.district-card-title {
+  font-weight: 700;
+  font-size: 0.78rem;
+  margin-bottom: 5px;
+  color: var(--text-muted);
+}
+.district-winner-badge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 10px;
+  color: #000;
+}
+.district-runoff-badge {
+  font-size: 0.68rem;
+  color: var(--warning);
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+/* 미니 막대 */
+.mini-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 2px;
+}
+.mini-bar-label { width: 22px; font-size: 0.7rem; color: var(--text-muted); }
+.mini-bar-wrap { flex: 1; background: var(--bg3); border-radius: 2px; height: 6px; overflow: hidden; }
+.mini-bar-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+.mini-bar-val { width: 28px; text-align: right; font-size: 0.7rem; }
+
+/* ===== 의석 아이콘 ===== */
+.seat-icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 10px 0;
+}
+.seat-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #000;
+  transition: transform 0.3s, opacity 0.3s;
+  animation: popIn 0.3s ease forwards;
+}
+@keyframes popIn {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ===== 결과 테이블 ===== */
+.result-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  margin-bottom: 12px;
+}
+.result-table th {
+  background: var(--bg3);
+  padding: 6px 10px;
+  text-align: left;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.result-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--bg3);
+}
+.result-table tr:last-child td { border-bottom: none; }
+.result-table .party-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+.color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.diff-positive { color: var(--success); font-weight: 700; }
+.diff-negative { color: var(--danger); font-weight: 700; }
+.diff-zero { color: var(--text-muted); }
+
+/* ===== 득표율 막대 (가로) ===== */
+.vote-bar-wrap {
+  background: var(--bg3);
+  border-radius: 3px;
+  height: 8px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+.vote-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s cubic-bezier(.25,.46,.45,.94);
+}
+
+/* ===== 중선거구 섹션 (섹션 헤더 + 3열 카드) ===== */
+.md-section {
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.md-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 12px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #000;
+  gap: 10px;
+}
+.md-section-seats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  font-size: 0.78rem;
+}
+.md-dot-row {
+  display: flex;
+  gap: 3px;
+}
+.md-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.2);
+  display: inline-block;
+}
+.md-section-body {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding: 8px;
+  background: var(--bg);
+}
+
+/* 중선거구 평균 득표율 요약 행 */
+.md-avg-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+}
+.md-avg-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.md-avg-bars {
+  display: flex;
+  flex: 1;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.md-avg-party {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 70px;
+}
+.md-avg-name {
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+  min-width: 22px;
+  /* 어두운 배경에서 녹색 등 중간 밝기 색상 가독성 개선 */
+  text-shadow: 0 0 5px rgba(0,0,0,0.9);
+}
+.md-avg-val {
+  font-size: 0.72rem;
+  color: var(--text);
+  white-space: nowrap;
+  min-width: 32px;
+  text-align: right;
+}
+
+/* ===== 비례대표 이상 의석 ===== */
+.pr-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 10px;
+}
+.pr-party-name { font-weight: 700; font-size: 0.85rem; }
+.pr-bar-label { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 1px; }
+.pr-ideal { color: var(--accent); font-size: 0.78rem; }
+.pr-actual { font-size: 0.78rem; }
+
+/* ===== 비교 화면 ===== */
+.compare-headline {
+  text-align: center;
+  padding: 14px 0 6px;
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+.same-votes { color: var(--warning); }
+.arrow-big { color: var(--text-muted); margin: 0 8px; }
+.diff-seats { color: var(--accent); }
+
+.compare-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.compare-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+}
+.compare-card-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 5px;
+}
+
+/* ===== 결선투표 표시 ===== */
+.runoff-section {
+  background: rgba(245,158,11,0.1);
+  border: 1px solid var(--warning);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  margin: 8px 0;
+  font-size: 0.8rem;
+}
+.runoff-title { color: var(--warning); font-weight: 700; margin-bottom: 4px; }
+.runoff-arrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 3px 0;
+}
+.runoff-arrow .arrow { color: var(--warning); font-size: 1rem; }
+
+/* ===== 대표성 지표 ===== */
+.distortion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.8rem;
+}
+.distortion-item:last-child { border-bottom: none; }
+.distortion-label { color: var(--text-muted); }
+.distortion-value { font-weight: 700; }
+
+/* ===== 시나리오 설명 ===== */
+.scenario-desc {
+  font-size: 0.78rem;
+  color: var(--accent);
+  background: rgba(56,189,248,0.07);
+  border: 1px solid rgba(56,189,248,0.2);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  margin-top: 6px;
+  line-height: 1.55;
+  display: none;
+}
+.scenario-desc.visible { display: block; }
+
+/* ===== 수업 발문 ===== */
+#question-list {
+  font-size: 0.8rem;
+  line-height: 1.75;
+  color: var(--text-muted);
+}
+#question-list ol {
+  padding-left: 16px;
+}
+#question-list li {
+  margin-bottom: 4px;
+  cursor: default;
+}
+#question-list li:hover { color: var(--text); }
+
+/* ===== 선거구 편집 테이블 ===== */
+.district-edit-table {
+  width: 100%;
+  font-size: 0.72rem;
+  border-collapse: collapse;
+  margin-top: 6px;
+}
+.district-edit-table th {
+  background: var(--bg);
+  padding: 3px 4px;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+.district-edit-table td {
+  border: 1px solid var(--border);
+  padding: 2px;
+}
+.district-edit-table input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  padding: 2px 3px;
+  font-size: 0.72rem;
+  text-align: center;
+}
+.district-edit-table input:focus { background: var(--bg); outline: 1px solid var(--accent); }
+
+/* ===== 힌트 / 해석 문구 ===== */
+.hint { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; }
+.interpretation {
+  background: rgba(56,189,248,0.06);
+  border: 1px solid rgba(56,189,248,0.2);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.interpretation li { margin-left: 14px; margin-bottom: 2px; }
+.interpretation li::before { content: "💡 "; }
+
+/* ===== 요약 의석 패널 ===== */
+.summary-party-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.summary-party-name { font-weight: 700; font-size: 0.85rem; flex: 1; }
+.summary-seat-num { font-size: 1.1rem; font-weight: 900; min-width: 28px; text-align: right; }
+.summary-pct { font-size: 0.72rem; color: var(--text-muted); min-width: 38px; text-align: right; }
+
+/* ===== 봉쇄 사표 표시 ===== */
+.wasted-tag {
+  background: rgba(239,68,68,0.15);
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  font-size: 0.7rem;
+  padding: 1px 5px;
+  border-radius: 10px;
+}
+
+/* ===== 시나리오 팝업 오버레이 ===== */
+.scenario-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+  animation: fadeIn 0.2s ease;
+}
+.scenario-modal.hidden { display: none; }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.scenario-modal-box {
+  background: var(--bg2);
+  border: 3px solid var(--accent);
+  border-radius: 20px;
+  width: min(1100px, 96vw);
+  max-height: 94vh;
+  overflow-y: auto;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+  animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.scenario-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 40px 22px;
+  border-bottom: 1px solid var(--border);
+}
+.scenario-modal-header span {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: -0.5px;
+}
+.scenario-modal-close {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 10px 24px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.scenario-modal-close:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+.scenario-modal-body {
+  padding: 32px 40px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* 득표율 막대 영역 */
+.scenario-modal-votes {
+  background: var(--bg3);
+  border-radius: var(--radius);
+  padding: 24px 32px;
+}
+.scenario-modal-votes h3 {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.modal-vote-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 16px;
+  font-size: 1.5rem;
+}
+.modal-vote-row:last-child { margin-bottom: 0; }
+.modal-vote-name {
+  font-weight: 800;
+  font-size: 1.6rem;
+  min-width: 64px;
+}
+.modal-vote-bar-wrap {
+  flex: 1;
+  background: var(--bg2);
+  border-radius: 8px;
+  height: 44px;
+  overflow: hidden;
+}
+.modal-vote-bar-fill {
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.7s cubic-bezier(.25,.46,.45,.94);
+}
+.modal-vote-pct {
+  font-size: 1.7rem;
+  font-weight: 800;
+  min-width: 72px;
+  text-align: right;
+}
+
+/* 수업 포인트 영역 */
+.scenario-modal-point {
+  background: rgba(56,189,248,0.08);
+  border: 2px solid rgba(56,189,248,0.35);
+  border-radius: var(--radius);
+  padding: 26px 32px;
+}
+.scenario-modal-point h3 {
+  font-size: 1.2rem;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 14px;
+  letter-spacing: 0.2px;
+}
+.scenario-modal-point p {
+  font-size: 1.35rem;
+  line-height: 1.75;
+  color: var(--text);
+}
+
+/* ===== 토스트 ===== */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg3);
+  border: 1px solid var(--accent);
+  color: var(--text);
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  z-index: 999;
+  transition: opacity 0.3s;
+}
+.toast.hidden { opacity: 0; pointer-events: none; }
+
+/* ===== 유틸 ===== */
+.hidden { display: none !important; }
+.mt8 { margin-top: 8px; }
+.mb8 { margin-bottom: 8px; }
+.text-center { text-align: center; }
+.text-success { color: var(--success); }
+.text-danger { color: var(--danger); }
+.text-warning { color: var(--warning); }
+.text-accent { color: var(--accent); }
+.fw700 { font-weight: 700; }
+.section-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin: 14px 0 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ===== 사이드바 접힘 ===== */
+#panel-left, #panel-right {
+  transition: width 0.22s ease, min-width 0.22s ease, padding 0.22s ease;
+}
+
+/* 왼쪽 사이드바 숨김 */
+#app-main.sidebar-hidden {
+  grid-template-columns: 0 1fr 260px;
+}
+#app-main.sidebar-hidden #panel-left {
+  width: 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+  border-right: none;
+}
+/* 오른쪽 패널 숨김 */
+#app-main.panel-right-hidden {
+  grid-template-columns: 280px 1fr 0;
+}
+#app-main.panel-right-hidden #panel-right {
+  width: 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+  border-left: none;
+}
+/* 양쪽 모두 숨김 */
+#app-main.sidebar-hidden.panel-right-hidden {
+  grid-template-columns: 0 1fr 0;
+}
+
+/* ===== 사이드바 탭 버튼 (탭 행 양 끝) ===== */
+.sidebar-tab-btn {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 3px 7px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: all 0.15s;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.sidebar-tab-btn:hover {
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+}
+.sidebar-tab-btn.is-collapsed {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* ===== 선거구 지도 확대 모달 ===== */
+.district-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 14, 30, 0.96);
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease;
+}
+.district-modal.hidden { display: none; }
+
+.district-modal-inner {
+  background: var(--bg2);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  width: min(1360px, 98vw);
+  max-height: 96vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.district-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 28px 14px;
+  border-bottom: 2px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg2);
+  z-index: 10;
+  flex-shrink: 0;
+}
+.district-modal-header span {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.district-modal-map {
+  padding: 20px 28px;
+}
+
+/* 모달 안 지도: 카드 더 크게 */
+.district-modal-map .district-map {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.district-modal-map .md-section-body {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 10px;
+}
+.district-modal-map .district-card {
+  padding: 11px 10px 9px;
+  min-height: 120px;
+}
+.district-modal-map .district-card-title {
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+.district-modal-map .district-winner-badge {
+  font-size: 0.8rem;
+  padding: 2px 8px;
+}
+.district-modal-map .mini-bar-row {
+  margin-bottom: 3px;
+}
+.district-modal-map .mini-bar-wrap {
+  height: 9px;
+}
+.district-modal-map .mini-bar-label {
+  font-size: 0.8rem;
+  width: 26px;
+}
+.district-modal-map .mini-bar-val {
+  font-size: 0.8rem;
+  width: 32px;
+}
+.district-modal-map .md-section-header {
+  padding: 10px 16px;
+  font-size: 1rem;
+}
+.district-modal-map .md-avg-row {
+  padding: 7px 10px;
+}
+
+/* 공개 버튼 영역 */
+.district-modal-foot {
+  padding: 14px 28px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* 의석 배분 + 해설 영역 */
+.district-modal-extra {
+  padding: 20px 28px 24px;
+  border-top: 2px solid var(--border);
+}
+
+/* ===== 결과 가리기 오버레이 ===== */
+#panel-center { position: relative; }
+#result-cover {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 18, 35, 0.94);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+}
+.result-cover-box {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.result-cover-icon { font-size: 3.5rem; line-height: 1; }
+.result-cover-text {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text);
+}
+.result-cover-hint {
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+/* ===== 용어 툴팁 ===== */
+[data-tip] {
+  position: relative;
+  border-bottom: 1px dashed rgba(148,163,184,0.5);
+  cursor: help;
+}
+[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  background: var(--bg3);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 7px 12px;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  white-space: normal;
+  width: 230px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 500;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  font-weight: 400;
+  text-decoration: none;
+}
+[data-tip]:hover::after { opacity: 1; }
+
+/* ===== 사표 시각화 바 ===== */
+.wasted-vis {
+  margin: 10px 0 6px;
+}
+.wasted-vis-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+.wasted-vis-bar {
+  display: flex;
+  height: 16px;
+  border-radius: 4px;
+  overflow: hidden;
+  gap: 1px;
+}
+.wasted-vis-won {
+  background: var(--success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  color: #000;
+  font-weight: 700;
+  transition: width 0.6s ease;
+  min-width: 24px;
+}
+.wasted-vis-lost {
+  background: var(--bg3);
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 4px;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+/* ===== 사용법 가이드 스텝 ===== */
+.guide-step {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.guide-step:last-of-type { border-bottom: none; }
+.guide-step-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #000;
+  font-size: 1rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.guide-step strong {
+  display: block;
+  font-size: 1.05rem;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+.guide-step p {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+/* ===== 반응형 ===== */
+@media (max-width: 1100px) {
+  #app-main { grid-template-columns: 260px 1fr; }
+  #panel-right { display: none; }
+}
+@media (max-width: 720px) {
+  #app-main { grid-template-columns: 1fr; }
+  #panel-left { max-height: none; border-right: none; border-bottom: 1px solid var(--border); }
+  #panel-center { max-height: none; }
+}
+
+/* ===== 전체화면 ===== */
+:fullscreen #app-header { position: sticky; top: 0; }
