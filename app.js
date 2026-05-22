@@ -111,13 +111,13 @@ const SCENARIOS = {
 // ── 선거제도별 설명 데이터 (좌: 선거구 방식 / 우: 대표 결정 방식) ──
 const SYSTEM_DESCS = {
   fptp: {
-    leftTitle: '소선거구제', leftExample: '영국·미국·캐나다',
+    leftTitle: '소선거구제',
     leftItems: [
       '한 선거구에서 <strong>1명만</strong> 선출',
       '지역구 의원이 누구인지 명확함',
       '큰 정당에 유리 — 소수 정당은 표를 받아도 의석을 못 얻을 수 있음',
     ],
-    rightTitle: '단순다수대표제', rightExample: '영국·미국·캐나다',
+    rightTitle: '단순다수대표제',
     rightItems: [
       '<strong>1위</strong>가 무조건 당선 — 과반 불필요',
       '33%만 받아도 나머지가 분산되면 당선 가능',
@@ -125,13 +125,13 @@ const SYSTEM_DESCS = {
     ],
   },
   majority: {
-    leftTitle: '소선거구제', leftExample: '프랑스',
+    leftTitle: '소선거구제',
     leftItems: [
       '한 선거구에서 <strong>1명만</strong> 선출',
       '지역구 의원이 누구인지 명확함',
       '1·2위 결선에서 유권자 과반의 지지를 받은 후보 당선',
     ],
-    rightTitle: '절대다수대표제', rightExample: '프랑스',
+    rightTitle: '절대다수대표제',
     rightItems: [
       '<strong>과반(50% 초과)</strong>을 얻은 후보만 당선',
       '과반 없으면 1·2위만 남아 <strong>결선투표</strong> 실시',
@@ -139,13 +139,13 @@ const SYSTEM_DESCS = {
     ],
   },
   'multi-plurality': {
-    leftTitle: '중대선거구제', leftExample: null,
+    leftTitle: '중대선거구제',
     leftItems: [
       '한 선거구에서 <strong>여러 명</strong> 선출',
       '소선거구 3개를 묶어 중선거구 1개(3석)로 운영',
       '2·3위 정당도 의석을 얻을 가능성이 있음',
     ],
-    rightTitle: '단순다수 (블록투표)', rightExample: null,
+    rightTitle: '단순다수 (블록투표)',
     rightItems: [
       '각 중선거구에서 <strong>득표 상위 3개 정당이 각 1석</strong> 획득',
       '4위 이하 정당은 의석을 얻기 어려움',
@@ -153,13 +153,13 @@ const SYSTEM_DESCS = {
     ],
   },
   pr: {
-    leftTitle: '전국 단일 선거구', leftExample: '독일·네덜란드·이스라엘',
+    leftTitle: '전국 단일 선거구',
     leftItems: [
       '전국이 하나의 선거구',
       '정당 득표율이 의석률로 직결됨',
       '지역 대표성은 낮지만 전국 비례성이 높음',
     ],
-    rightTitle: '비례대표제', rightExample: '독일·네덜란드·이스라엘',
+    rightTitle: '비례대표제',
     rightItems: [
       '정당 득표율에 <strong>비례</strong>하여 의석 배분',
       '소수 정당도 득표율만큼 의석 획득 가능',
@@ -167,14 +167,13 @@ const SYSTEM_DESCS = {
     ],
   },
   local: {
-    leftTitle: '중선거구제 (기초의회)', leftExample: '한국 기초의회',
+    leftTitle: '중선거구제 (기초의회)',
     leftItems: [
       '한 선거구에서 <strong>여러 명</strong> 선출 (보통 2~4명)',
       '유권자는 후보자 <strong>1명</strong>에게만 투표',
       '득표 순위 N위까지 당선 — 같은 정당 후보끼리도 경쟁',
     ],
     rightTitle: '단순다수대표제 (득표 순위)',
-    rightExample: '한국 기초의회',
     rightItems: [
       '정당 공천 시 <strong>몇 명을 낼 것인가</strong>가 핵심 전략',
       '후보를 너무 많이 내면 표가 분산되어 공멸 위험',
@@ -182,17 +181,31 @@ const SYSTEM_DESCS = {
     ],
   },
   mixed: {
-    leftTitle: '지역구 (소선거구)', leftExample: '한국 현행·일본',
+    leftTitle: '지역구 (소선거구)',
     leftItems: [
       '전체 의석 중 일부를 소선거구 단순다수로 배분',
       '지역구 의원이 누구인지 명확',
       '지역구 비율이 높을수록 1위 정당에 유리',
     ],
-    rightTitle: '비례 (전국)', rightExample: '한국 현행·일본',
+    rightTitle: '비례 (전국)',
     rightItems: [
       '나머지 의석을 전국 정당 득표율로 별도 배분',
       '지역구와 비례가 서로 영향을 주지 않음 (<strong>병립형</strong>)',
-      '한국 현행: 지역구 254석 + 비례 46석',
+      '지역구 의석이 많은 정당이 비례에서도 추가로 얻음',
+    ],
+  },
+  mmp: {
+    leftTitle: '지역구 (소선거구)',
+    leftItems: [
+      '전체 의석 중 일부를 소선거구 단순다수로 배분',
+      '지역구 의석이 많을수록 비례 의석 풀이 줄어듦',
+      '병립형과 동일한 지역구 수·후보자 데이터 사용',
+    ],
+    rightTitle: '연동형 비례 배분',
+    rightItems: [
+      '비례 의석 = <strong>이상적 총의석 − 지역구 의석</strong> (연동 공식)',
+      '지역구에서 많이 이긴 정당은 비례 의석이 줄어듦',
+      '병립형보다 득표율↔의석률의 차이가 작아짐',
     ],
   },
 };
@@ -262,7 +275,13 @@ const SYSTEM_QUESTIONS = {
     '지역구 결과와 비례 결과가 어떻게 다른가?',
     '지역구 의석 비율을 높이면 어떤 정당에 유리해지는가?',
     '비례 의석을 늘리면 득표율과 의석률의 차이가 어떻게 달라지는가?',
-    '병립형과 순수 비례대표제의 결과를 비교해보자.',
+    '병립형과 연동형의 결과를 비교해보자. 어떤 정당에서 차이가 가장 큰가?',
+  ],
+  mmp: [
+    '병립형과 연동형에서 지역구 의석이 많은 정당의 비례 의석은 어떻게 달라지는가?',
+    '연동 공식에서 "이상적 의석 − 지역구 의석"이 음수가 되면 어떻게 처리하는가?',
+    '지역구 의석 비율이 높을수록 연동 효과는 커지는가, 작아지는가?',
+    '연동형이 병립형보다 비례성이 높다고 할 수 있는가? 항상 그런가?',
   ],
   compare: [
     '같은 득표율인데 왜 제도마다 의석 수가 달라지는가?',
@@ -1393,6 +1412,59 @@ function renderCandidateDistrictInputs() {
 }
 
 /**
+ * 연동형 혼합제 계산 (MMP)
+ * 지역구: 소선거구 단순다수 (병립형과 동일)
+ * 비례: 연동 공식 → 이상적의석 − 지역구의석 = 비례요구량, 최대잔여로 잔여 배분
+ */
+function calculateMMP() {
+  const n = state.numParties;
+  const totalSeats = state.totalSeats;
+  const consCount = Math.min(state.mixedConstituencySeats, state.candidateDistricts.length);
+  const prPool = totalSeats - consCount;
+
+  // 지역구: 후보자 기반 FPTP (앞 consCount개 선거구)
+  const consSeats = new Array(n).fill(0);
+  const districtResults = [];
+  for (let di = 0; di < consCount; di++) {
+    const district = state.candidateDistricts[di];
+    if (!district) continue;
+    const ranked = district.candidates
+      .filter(c => c.partyIdx < n)
+      .map(c => ({ ...c }))
+      .sort((a, b) => b.votes - a.votes || a.partyIdx - b.partyIdx);
+    if (!ranked.length) continue;
+    consSeats[ranked[0].partyIdx]++;
+    districtResults.push({ districtIdx: di, name: district.name, ranked, winnerIdx: ranked[0].partyIdx });
+  }
+
+  // 연동 비례 배분
+  const totalVotePct = state.parties.reduce((s, p) => s + (parseFloat(p.vote) || 0), 0) || 100;
+  // 각 정당의 이상적 총의석
+  const idealSeats = state.parties.map(p => totalSeats * (parseFloat(p.vote) || 0) / totalVotePct);
+  // 연동 요구량: 이상적 − 지역구 (음수면 0)
+  const linkedDemand = idealSeats.map((ideal, i) => Math.max(0, ideal - consSeats[i]));
+  const demandTotal = linkedDemand.reduce((s, v) => s + v, 0);
+
+  // 비례 풀 내에서 배분 (요구 초과 시 비례 축소)
+  const scale = demandTotal > prPool && prPool > 0 ? prPool / demandTotal : 1;
+  const scaledDemand = linkedDemand.map(v => v * scale);
+  const prFloor = scaledDemand.map(v => Math.floor(v));
+
+  // 잔여 의석: 최대잔여
+  const remaining = prPool - prFloor.reduce((s, v) => s + v, 0);
+  const remainders = scaledDemand
+    .map((v, i) => ({ idx: i, rem: v - prFloor[i] }))
+    .sort((a, b) => b.rem - a.rem || a.idx - b.idx);
+  const prFinal = prFloor.slice();
+  for (let r = 0; r < remaining && r < remainders.length; r++) {
+    prFinal[remainders[r].idx]++;
+  }
+
+  const seats = consSeats.map((c, i) => c + prFinal[i]);
+  return { seats, consSeats, prFinal, idealSeats, linkedDemand, scaledDemand, districtResults, consCount, prPool, method: 'mmp' };
+}
+
+/**
  * 병립형 혼합제 결과 렌더링
  * 지역구 지도 + 비례 배분 + 합산 결과
  */
@@ -1449,6 +1521,91 @@ function renderMixed(result) {
   container.innerHTML = html;
 }
 
+/**
+ * 연동형 혼합제 결과 렌더링
+ */
+function renderMMP(result) {
+  const { seats, consSeats, prFinal, idealSeats, linkedDemand, districtResults, consCount, prPool } = result;
+  const container = document.getElementById('mmp-results');
+  if (!container) return;
+  const parties = state.parties;
+  const totalSeats = state.totalSeats;
+  let html = '';
+
+  // 지역구 결과 (병립형과 동일한 방식)
+  html += `<div class="section-title">📍 지역구 결과 (${consCount}석 — 소선거구 단순다수)</div>`;
+  html += `<div class="district-map">`;
+  districtResults.forEach(dr => {
+    html += renderCandidateDistrictCard(dr.name, dr.ranked, parties, 1);
+  });
+  html += `</div>`;
+
+  // 연동 계산 테이블
+  html += `<div class="section-title">🔗 연동 비례 계산 과정</div>`;
+  html += `<table class="result-table">
+    <thead><tr>
+      <th>정당</th><th>득표율</th>
+      <th>이상적<br>의석</th>
+      <th>지역구<br>의석</th>
+      <th>연동 요구<br>(이상−지역구)</th>
+      <th>비례<br>배분</th>
+      <th>최종</th>
+    </tr></thead><tbody>`;
+  parties.forEach((p, i) => {
+    const vp = parseFloat(p.vote) || 0;
+    const demand = linkedDemand[i];
+    const demandStyle = demand <= 0 ? 'color:var(--text-muted)' : '';
+    html += `<tr>
+      <td><div class="party-cell">${colorDot(p.color)}${p.name}</div></td>
+      <td>${fmt(vp)}%</td>
+      <td style="color:var(--text-muted)">${fmt(idealSeats[i], 1)}석</td>
+      <td><strong style="color:${p.color}">${consSeats[i]}석</strong></td>
+      <td style="${demandStyle}">${demand <= 0 ? '0 (초과 없음)' : fmt(demand, 1) + '석'}</td>
+      <td><strong>${prFinal[i]}석</strong></td>
+      <td style="font-weight:700;color:${p.color}">${seats[i]}석</td>
+    </tr>`;
+  });
+  html += `</tbody></table>`;
+
+  // 병립형과 나란히 비교
+  const mixedResult = state.results?.mixed;
+  if (mixedResult) {
+    html += `<div class="section-title">⚖️ 병립형 vs 연동형 비교 (같은 지역구 ${consCount}석 기준)</div>`;
+    html += `<table class="result-table">
+      <thead><tr>
+        <th>정당</th><th>득표율</th>
+        <th>병립형</th><th>연동형</th><th>차이</th>
+      </tr></thead><tbody>`;
+    parties.forEach((p, i) => {
+      const vp = parseFloat(p.vote) || 0;
+      const diff = seats[i] - mixedResult.seats[i];
+      const diffClass = diff > 0 ? 'diff-positive' : diff < 0 ? 'diff-negative' : 'diff-zero';
+      html += `<tr>
+        <td><div class="party-cell">${colorDot(p.color)}${p.name}</div></td>
+        <td>${fmt(vp)}%</td>
+        <td>${mixedResult.seats[i]}석 <small>(${fmt(seatPct(mixedResult.seats[i], totalSeats))}%)</small></td>
+        <td>${seats[i]}석 <small>(${fmt(seatPct(seats[i], totalSeats))}%)</small></td>
+        <td><span class="${diffClass}">${diff > 0 ? '+' : ''}${diff}석</span></td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+  }
+
+  // 합산 의석
+  html += `<div class="section-title">💺 합산 의석 (지역구 ${consCount} + 비례 ${prPool})</div>`;
+  html += renderSeatChart(seats, parties);
+  html += renderResultTable(seats, parties, totalSeats);
+
+  html += `<div class="interpretation"><ul>
+    <li>연동형은 비례 의석을 <strong>지역구 당선 결과를 보정하는 방식</strong>으로 배분합니다.</li>
+    <li>지역구에서 이미 많이 이긴 정당은 비례 의석이 줄어들어 전체 의석이 득표율에 가까워집니다.</li>
+    <li>지역구 의석이 이상적 의석을 초과한 정당은 비례 의석을 받지 못합니다.</li>
+    <li>왼쪽 패널에서 지역구 수를 바꾸면 병립형과 연동형의 차이가 달라집니다.</li>
+  </ul></div>`;
+
+  container.innerHTML = html;
+}
+
 /* ─────────────────────────────────────────────
    12-c. 탭 선택 → 활성 패널 매핑
 ───────────────────────────────────────────── */
@@ -1466,6 +1623,7 @@ function getActiveTabId() {
     'multi-plurality':'tab-multi-plurality',
     pr:               'tab-pr',
     mixed:            'tab-mixed',
+    mmp:              'tab-mmp',
   };
   return map[state.activeSystem] || 'tab-fptp';
 }
@@ -1478,6 +1636,7 @@ const SYSTEM_NAMES = {
   'multi-plurality':'중대선거구제 (단순다수)',
   pr:               '비례대표제',
   mixed:            '병립형 혼합제',
+  mmp:              '연동형 혼합제',
 };
 
 /**
@@ -1502,12 +1661,10 @@ function updateDescPanel() {
     panel.classList.remove('compare-mode');
     const d = SYSTEM_DESCS[state.activeSystem];
     if (!d) return;
-    document.getElementById('desc-district-header').textContent =
-      d.leftExample ? `${d.leftTitle} — ${d.leftExample}` : d.leftTitle;
+    document.getElementById('desc-district-header').textContent = d.leftTitle;
     document.getElementById('desc-district-list').innerHTML =
       d.leftItems.map(t => `<li>${t}</li>`).join('');
-    document.getElementById('desc-method-header').textContent =
-      d.rightExample ? `${d.rightTitle} — ${d.rightExample}` : d.rightTitle;
+    document.getElementById('desc-method-header').textContent = d.rightTitle;
     document.getElementById('desc-method-list').innerHTML =
       d.rightItems.map(t => `<li>${t}</li>`).join('');
   }
@@ -1536,17 +1693,17 @@ function updateActiveTab() {
 
   // 병립형 설정 카드
   const mixedCard = document.getElementById('card-mixed-settings');
-  if (mixedCard) mixedCard.classList.toggle('hidden', state.activeSystem !== 'mixed');
+  if (mixedCard) mixedCard.classList.toggle('hidden', state.activeSystem !== 'mixed' && state.activeSystem !== 'mmp');
 
-  // 후보자 편집 카드 (소선거구·절대다수·블록투표·기초의회 공통)
+  // 후보자 편집 카드 (소선거구·절대다수·블록투표·기초의회·연동형 공통)
   const candidateSystems = ['fptp', 'majority', 'multi-plurality', 'local'];
+  const showCandCard = candidateSystems.includes(state.activeSystem) || state.activeSystem === 'mmp';
   const candCard = document.getElementById('card-candidate-settings');
   if (candCard) {
-    const show = candidateSystems.includes(state.activeSystem);
-    candCard.classList.toggle('hidden', !show);
-    if (show) renderCandidateDistrictInputs();
+    candCard.classList.toggle('hidden', !showCandCard);
+    if (showCandCard) renderCandidateDistrictInputs();
   }
-  // 정당 득표율 카드는 비례 계산이 필요한 시스템에서만 표시
+  // 정당 득표율 카드는 비례 계산이 필요한 시스템에서만 표시 (연동형도 포함)
   const partyCard = document.getElementById('card-party-settings');
   const prOptions  = document.getElementById('card-pr-options');
   const isPartySys = !candidateSystems.includes(state.activeSystem);
@@ -1772,14 +1929,16 @@ function runSimulation() {
   const multiPlurality = calculateBlockVoting();
   const pr             = calculatePR();
   const mixed          = calculateMixed();
+  const mmp            = calculateMMP();
   const local          = calculateLocalCouncil();
-  state.results = { fptp, majority, 'multi-plurality': multiPlurality, pr, mixed, local };
+  state.results = { fptp, majority, 'multi-plurality': multiPlurality, pr, mixed, mmp, local };
 
   // 렌더링 (모든 패널을 백그라운드 계산)
   renderFPTP(fptp);
   renderMajority(majority);
   renderMultiPlurality(multiPlurality);
   renderMixed(mixed);
+  renderMMP(mmp);
   renderLocalCouncil(local);
   renderPR(pr);
   renderCompare(state.results);

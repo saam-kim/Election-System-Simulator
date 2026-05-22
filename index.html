@@ -124,7 +124,7 @@
     <!-- SNTV 후보자 설정 (중대선거구제 + SNTV 선택 시에만 표시) -->
     <!-- 병립형 혼합제 설정 (mixed 탭 선택 시 표시) -->
     <section class="card hidden" id="card-mixed-settings">
-      <h2 class="card-title">병립형 설정</h2>
+      <h2 class="card-title">혼합제 설정 <small style="font-weight:400;font-size:0.75rem">(병립형·연동형 공통)</small></h2>
       <div class="form-row">
         <label>지역구 의석 수</label>
         <div class="btn-group-small">
@@ -180,6 +180,7 @@
       <button class="tab-system" data-system="multi-plurality">중대선거구제<br><small>단순다수</small></button>
       <button class="tab-system" data-system="pr">비례<br>대표제</button>
       <button class="tab-system" data-system="mixed">병립형<br>혼합제</button>
+      <button class="tab-system" data-system="mmp">연동형<br>혼합제</button>
       <button class="tab-system" data-system="local" style="border-color:#f97316;color:#f97316">기초의회<br><small>후보자 중심</small></button>
       <div class="tab-row-spacer"></div>
       <button id="btn-show-compare" class="tab-compare-btn">📊 전체 비교</button>
@@ -236,6 +237,13 @@
       <!-- 병립형 혼합제 탭 -->
       <div id="tab-mixed" class="tab-panel">
         <div id="mixed-results" class="results-area">
+          <p class="placeholder-text">시뮬레이션 실행 후 결과가 표시됩니다.</p>
+        </div>
+      </div>
+
+      <!-- 연동형 혼합제 탭 -->
+      <div id="tab-mmp" class="tab-panel">
+        <div id="mmp-results" class="results-area">
           <p class="placeholder-text">시뮬레이션 실행 후 결과가 표시됩니다.</p>
         </div>
       </div>
