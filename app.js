@@ -226,11 +226,11 @@ const SCENARIO_DESCS = {
   },
   D: {
     label: '극단 분산형',
-    point: '4당이 25~28%로 거의 같은 표를 나눕니다. "이 표들을 가장 비례성 있게 반영하는 제도는 무엇인가?"라는 질문에 집중해보세요.',
+    point: '4당이 25~28%로 거의 같은 표를 나눕니다. 소선거구제와 중대선거구제의 의석 수 차이가 가장 두드러지는 시나리오입니다. 각 선거구에서 1위만 당선되는 소선거구제와, 상위 3명이 당선되는 블록투표를 비교해보세요. 어떤 정당이 "좁은 선거구에서 늘 2위"였는데 "넓은 선거구에서 드디어 당선"되나요?',
   },
   E: {
     label: '2016 총선 데이터',
-    point: 'A당(새누리 계열) 35%, B당(민주) 32%, C당(국민의당) 26%, D당(정의당) 7%. C당이 26%를 받았지만 소선거구에서 의석을 거의 못 얻은 실제 상황입니다.',
+    point: 'A당(새누리 계열) 35%, B당(민주) 32%, C당(국민의당) 26%, D당(정의당) 7%. C당이 26%를 받았지만 소선거구에서 의석을 거의 못 얻은 실제 상황입니다. 중대선거구 블록투표였다면 C당 의석이 얼마나 달라졌을지 확인해보세요.',
   },
   F: {
     label: '2020 총선 데이터',
@@ -2039,6 +2039,19 @@ function applyScenario(key) {
     arr[0] += diff;
     return arr;
   });
+
+  // 후보자 기반 시스템용: 시나리오 득표율에 맞게 후보자 득표수 스케일링
+  // (FPTP vs 블록투표 차이가 시나리오에 따라 드러나도록)
+  state.candidateDistricts = CANDIDATE_DISTRICTS_DEFAULT.map(dd => ({
+    ...dd,
+    candidates: dd.candidates
+      .filter(c => c.partyIdx < state.numParties)
+      .map(c => {
+        const defaultPct = Math.max(1, PARTY_VOTES_DEFAULT[c.partyIdx] || 1);
+        const scenarioPct = s.votes[c.partyIdx] || 0;
+        return { ...c, votes: Math.max(1, Math.round(c.votes * scenarioPct / defaultPct)) };
+      }),
+  }));
 
   renderPartyInputs();
   if (document.getElementById('district-editor').classList.contains('hidden') === false) {
