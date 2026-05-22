@@ -852,28 +852,46 @@ function renderResultTable(seats, parties, totalSeats) {
  * @param {number}   seats      - 당선 인원 수 (1=소선거구, 2~3=중선거구)
  * @param {string}   [borderColor] - 카드 테두리 색상 (기본: 1위 후보 정당 색)
  */
-function renderCandidateDistrictCard(name, ranked, parties, seats, borderColor) {
+/**
+ * opts.cutoffLabel   — 커트라인 레이블 (null이면 기본 "당선 기준")
+ * opts.cutoffVariant — 커트라인 색상 클래스 ('success' | 'runoff' | '')
+ * opts.headerBadge   — undefined=기본 당선배지, null=배지없음, string=커스텀HTML
+ * opts.runoffAdvance — true 시 1·2위를 highlighted(결선 진출)로, 3위~는 dimmed
+ */
+function renderCandidateDistrictCard(name, ranked, parties, seats, borderColor, opts = {}) {
+  const { cutoffLabel = null, cutoffVariant = '', headerBadge = undefined, runoffAdvance = false } = opts;
   const winner = parties[ranked[0]?.partyIdx];
   const cardColor = borderColor || winner?.color || '#888';
   const maxVotes = ranked[0]?.votes || 1;
+  const cutoffAt = runoffAdvance ? 2 : seats;
 
-  let html = `<div class="district-card" style="border-color:${cardColor}">
+  const extraClass = runoffAdvance ? ' needs-runoff' : '';
+  let html = `<div class="district-card${extraClass}" style="border-color:${cardColor}">
     <div class="district-card-bg" style="background:${cardColor}"></div>
-    <div class="district-card-title">${name}</div>
-    <div class="district-winner-badge" style="background:${winner?.color || '#888'}">${ranked[0]?.name || '?'}</div>`;
+    <div class="district-card-title">${name}</div>`;
+
+  if (headerBadge === undefined) {
+    html += `<div class="district-winner-badge" style="background:${winner?.color || '#888'}">${ranked[0]?.name || '?'}</div>`;
+  } else if (headerBadge) {
+    html += headerBadge;
+  }
 
   ranked.forEach((c, rank) => {
     const party = parties[c.partyIdx];
-    const isWinner = rank < seats;
+    const isHighlighted = rank < cutoffAt;
     const barW = (c.votes / maxVotes) * 100;
-    if (rank === seats) html += `<div class="local-cutoff"></div>`;
-    html += `<div class="local-cand-row ${isWinner ? 'winner' : 'loser'}">
-      <span class="local-rank-num ${isWinner ? 'win' : 'lose'}">${rank + 1}위</span>
+    if (rank === cutoffAt) {
+      const labelAttr = cutoffLabel !== null ? ` data-label="${cutoffLabel}"` : '';
+      const varClass   = cutoffVariant ? ` ${cutoffVariant}` : '';
+      html += `<div class="local-cutoff${varClass}"${labelAttr}></div>`;
+    }
+    html += `<div class="local-cand-row ${isHighlighted ? 'winner' : 'loser'}">
+      <span class="local-rank-num ${isHighlighted ? 'win' : 'lose'}">${rank + 1}위</span>
       <span class="local-party-pip" style="background:${party?.color || '#888'}"></span>
       <span class="local-cand-name">${c.name}</span>
       <span class="local-party-label" style="color:${party?.color || '#888'}">${party?.name || '?'}</span>
       <div class="mini-bar-wrap" style="flex:1;height:7px">
-        <div class="mini-bar-fill" style="width:${barW}%;background:${party?.color || '#888'};opacity:${isWinner ? 1 : 0.35}"></div>
+        <div class="mini-bar-fill" style="width:${barW}%;background:${party?.color || '#888'};opacity:${isHighlighted ? 1 : 0.35}"></div>
       </div>
       <span class="local-votes-num">${c.votes.toLocaleString()}표</span>
     </div>`;
@@ -929,13 +947,19 @@ function renderMajority(result) {
   </div>`;
   html += `<div class="district-map">`;
   districtResults.forEach(dr => {
-    const card = renderCandidateDistrictCard(dr.name, dr.ranked, parties, 1);
-    // 결선 배지 삽입
-    if (dr.needRunoff) {
-      html += card.replace('class="district-card"', 'class="district-card"')
-                  .replace('</div>', `<div class="district-runoff-badge">⚡ 결선</div></div>`);
+    if (!dr.needRunoff) {
+      // 직접당선: 녹색 테두리, "과반 달성 ✓" 커트라인
+      html += renderCandidateDistrictCard(dr.name, dr.ranked, parties, 1, 'var(--success)', {
+        cutoffLabel: '과반 달성 ✓', cutoffVariant: 'success',
+      });
     } else {
-      html += card;
+      // 결선투표: 주황 테두리, 1·2위 결선 진출 표시
+      html += renderCandidateDistrictCard(dr.name, dr.ranked, parties, 1, 'var(--warning)', {
+        cutoffLabel: '결선 진출',
+        cutoffVariant: 'runoff',
+        headerBadge: `<div class="district-winner-badge" style="background:var(--warning);color:#000">⚡ 결선</div>`,
+        runoffAdvance: true,
+      });
     }
   });
   html += `</div>`;

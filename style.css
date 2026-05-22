@@ -1443,6 +1443,18 @@ body {
   background: var(--bg2);
   padding: 0 3px;
 }
+/* 결선투표 카드 구분 */
+.district-card.needs-runoff {
+  background: rgba(245,158,11,0.05);
+}
+/* data-label 속성이 있으면 내용 덮어쓰기 */
+.local-cutoff[data-label]::after { content: attr(data-label); }
+/* 직접당선: 녹색 */
+.local-cutoff.success { border-color: var(--success); }
+.local-cutoff.success::after { color: var(--success); }
+/* 결선진출: 주황 */
+.local-cutoff.runoff { border-color: var(--warning); border-style: solid; }
+.local-cutoff.runoff::after { color: var(--warning); }
 
 /* ===== 기초의회 편집 UI ===== */
 .local-editor-district {
