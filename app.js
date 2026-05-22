@@ -138,20 +138,6 @@ const SYSTEM_DESCS = {
       '탈락 후보 지지자들의 표 이동 방향이 승부를 가름',
     ],
   },
-  multi: {
-    leftTitle: '중대선거구제', leftExample: '과거 한국(1973–1987)',
-    leftItems: [
-      '한 선거구에서 <strong>여러 명</strong> 선출',
-      '소선거구 3개를 묶어 중선거구 1개(3석)로 운영',
-      '2·3위 정당도 의석을 얻을 가능성이 생김',
-    ],
-    rightTitle: '비례배분 (동트 방식)', rightExample: null,
-    rightItems: [
-      '득표율을 1, 2, 3…으로 나눈 몫이 큰 순서대로 의석 배분',
-      '득표율에 가깝게 의석이 배분됨',
-      '소수 정당도 일정 득표율만 넘으면 의석 획득 가능',
-    ],
-  },
   'multi-plurality': {
     leftTitle: '중대선거구제', leftExample: null,
     leftItems: [
@@ -252,12 +238,6 @@ const SYSTEM_QUESTIONS = {
     '결선에서 3·4위 표가 어디로 이동했는가? 왜 그리로 이동했는가?',
     '단순다수제 결과와 비교할 때 당선자가 달라진 선거구가 있는가?',
     '결선을 거치면 당선자의 지지율이 어떻게 달라지는가?',
-  ],
-  multi: [
-    '소선거구제와 비교할 때 소수 정당의 의석이 어떻게 달라졌는가?',
-    '중선거구 1~4 중 가장 다양한 정당이 의석을 나눈 곳은 어디인가?',
-    '선거구 크기가 커지면 왜 소수 정당에 유리해질까?',
-    '동트 방식에서 1위 정당이 항상 가장 많은 의석을 받는가?',
   ],
   'multi-plurality': [
     '블록투표와 비례배분(동트)의 결과를 비교해보자. 무엇이 다른가?',
@@ -561,46 +541,6 @@ function calculateMajorityRunoff() {
   const directCount = districtResults.filter(d => !d.needRunoff).length;
   const runoffCount = districtResults.filter(d => d.needRunoff).length;
   return { seats, districtResults, wastedPct: 0, method: 'majority', directCount, runoffCount };
-}
-
-/**
- * 중대선거구제 (Multi-Member District)
- * 12개 소선거구 → 4개 중선거구(각 3석)
- * 의석 배분: 동트 방식
- */
-function calculateMultiMemberDistrict() {
-  const n = state.numParties;
-  const seatsPerDistrict = 3; // 각 중선거구 의석
-  const numMD = 4; // 중선거구 수
-  const seats = new Array(n).fill(0);
-  const mdResults = [];
-
-  for (let md = 0; md < numMD; md++) {
-    // 중선거구에 포함된 소선거구 인덱스
-    const districtIndices = [md * 3, md * 3 + 1, md * 3 + 2];
-    // 평균 득표율 계산
-    const avgVotes = new Array(n).fill(0);
-    districtIndices.forEach(di => {
-      if (di < state.districts.length) {
-        state.districts[di].forEach((v, pi) => { avgVotes[pi] += v; });
-      }
-    });
-    const cnt = districtIndices.filter(di => di < state.districts.length).length;
-    const avgPct = avgVotes.map(v => v / cnt);
-
-    // 동트 방식으로 seatsPerDistrict석 배분
-    const mdSeats = calculateDHondt(avgPct, seatsPerDistrict);
-    mdSeats.forEach((s, i) => { seats[i] += s; });
-
-    mdResults.push({
-      mdIdx: md,
-      districtIndices,
-      avgPct,
-      seats: mdSeats,
-    });
-  }
-
-  return { seats, mdResults, method: 'multi' };
 }
 
 /**
@@ -1127,7 +1067,7 @@ function renderMDMap(mdResults, mdColors, method, highlightWinner = false) {
     html += `</div>`; // .md-section-body
 
     // ── 중선거구 평균 득표율 요약 행 ──
-    // avgPct는 calculateMultiMemberDistrict / calculateBlockVoting에서 계산된 값
+    // avgPct는 calculateBlockVoting에서 계산된 값
     const maxAvg = Math.max(...md.avgPct);
     html += `<div class="md-avg-row">
       <span class="md-avg-label">중선거구 평균</span>
@@ -1146,28 +1086,6 @@ function renderMDMap(mdResults, mdColors, method, highlightWinner = false) {
   });
 
   return html;
-}
-
-function renderMulti(result) {
-  const { seats, mdResults } = result;
-  const container = document.getElementById('multi-results');
-  const parties = state.parties;
-  const mdColors = ['#38bdf8', '#a78bfa', '#34d399', '#fb923c'];
-  let html = '';
-
-  html += renderMDMap(mdResults, mdColors, '비례배분 (동트 방식)');
-
-  html += `<div class="section-title">💺 전체 의석 배분</div>`;
-  html += renderSeatChart(seats, parties);
-  html += renderResultTable(seats, parties, state.totalSeats);
-
-  html += `<div class="interpretation"><ul>
-    <li>한 선거구에서 여러 명을 뽑기 때문에 소수 정당도 의석을 얻을 가능성이 커집니다.</li>
-    <li>소선거구제보다 득표율과 의석률의 차이가 줄어들 수 있습니다.</li>
-    <li>동트 방식: 득표율을 1, 2, 3…으로 나눈 몫 중 큰 순서대로 3석 배분.</li>
-  </ul></div>`;
-
-  container.innerHTML = html;
 }
 
 /* ─────────────────────────────────────────────
@@ -1545,7 +1463,6 @@ function getActiveTabId() {
     local:            'tab-local',
     fptp:             'tab-fptp',
     majority:         'tab-majority',
-    multi:            'tab-multi',
     'multi-plurality':'tab-multi-plurality',
     pr:               'tab-pr',
     mixed:            'tab-mixed',
@@ -1558,7 +1475,6 @@ const SYSTEM_NAMES = {
   local:            '기초의회 선거 (중선거구 + 단순다수 / 후보자 중심)',
   fptp:             '소선거구제 + 단순다수대표제',
   majority:         '소선거구제 + 절대다수대표제',
-  multi:            '중대선거구제 (비례배분)',
   'multi-plurality':'중대선거구제 (단순다수)',
   pr:               '비례대표제',
   mixed:            '병립형 혼합제',
@@ -1664,7 +1580,7 @@ function updateContextQuestions() {
 
 function renderCompare(results) {
   const container = document.getElementById('compare-results');
-  const { fptp, majority, multi, pr } = results;
+  const { fptp, majority, pr } = results;
   const multiPlurality = results['multi-plurality'];
   const parties = state.parties;
   const totalSeats = state.totalSeats;
@@ -1673,7 +1589,6 @@ function renderCompare(results) {
     { key: 'fptp',             label: '소선거구\n단순다수',     result: fptp },
     { key: 'majority',         label: '소선거구\n절대다수',     result: majority },
     { key: 'multi-plurality',  label: '중대선거구\n블록투표',   result: multiPlurality },
-    { key: 'multi',            label: '중대선거구\n비례배분',   result: multi },
     { key: 'pr',               label: '비례대표제',             result: pr },
   ];
 
@@ -1702,7 +1617,7 @@ function renderCompare(results) {
     <thead><tr>
       <th>정당</th><th>득표율</th>
       <th>소선거구<br>단순다수</th><th>소선거구<br>절대다수</th>
-      <th>중대선거구<br>블록투표</th><th>중대선거구<br>비례배분</th><th>비례대표제</th>
+      <th>중대선거구<br>블록투표</th><th>비례대표제</th>
     </tr></thead><tbody>`;
   parties.forEach((p, pi) => {
     const vp = parseFloat(p.vote) || 0;
@@ -1713,7 +1628,6 @@ function renderCompare(results) {
       <td>${fptp.seats[pi]}석 <small>(${fmt(seatPct(fptp.seats[pi], totalSeats))}%)</small></td>
       <td>${majority.seats[pi]}석 <small>(${fmt(seatPct(majority.seats[pi], totalSeats))}%)</small></td>
       <td>${mpSeats}석 <small>(${multiPlurality ? fmt(seatPct(mpSeats, totalSeats)) : '—'}%)</small></td>
-      <td>${multi.seats[pi]}석 <small>(${fmt(seatPct(multi.seats[pi], totalSeats))}%)</small></td>
       <td>${pr.seats[pi]}석 <small>(${fmt(seatPct(pr.seats[pi], totalSeats))}%)</small></td>
     </tr>`;
   });
@@ -1855,17 +1769,15 @@ function runSimulation() {
   // 계산 (모든 제도를 미리 계산해 캐싱)
   const fptp           = calculateFPTP();
   const majority       = calculateMajorityRunoff();
-  const multi          = calculateMultiMemberDistrict();
   const multiPlurality = calculateBlockVoting();
   const pr             = calculatePR();
   const mixed          = calculateMixed();
   const local          = calculateLocalCouncil();
-  state.results = { fptp, majority, multi, 'multi-plurality': multiPlurality, pr, mixed, local };
+  state.results = { fptp, majority, 'multi-plurality': multiPlurality, pr, mixed, local };
 
   // 렌더링 (모든 패널을 백그라운드 계산)
   renderFPTP(fptp);
   renderMajority(majority);
-  renderMulti(multi);
   renderMultiPlurality(multiPlurality);
   renderMixed(mixed);
   renderLocalCouncil(local);
@@ -1887,7 +1799,8 @@ function runSimulation() {
 
 function copyResults() {
   if (!state.results) { showToast('먼저 시뮬레이션을 실행하세요.'); return; }
-  const { fptp, majority, multi, pr } = state.results;
+  const { fptp, majority, pr } = state.results;
+  const multiPlurality = state.results['multi-plurality'];
   const parties = state.parties;
   const totalSeats = state.totalSeats;
 
@@ -1896,9 +1809,10 @@ function copyResults() {
   text += `■ 득표율\n`;
   parties.forEach(p => { text += `  ${p.name}: ${fmt(p.vote)}%\n`; });
   text += `\n■ 의석 배분 결과\n`;
-  text += `${'정당'.padEnd(6)}${'단순다수'.padEnd(8)}${'절대다수'.padEnd(8)}${'중대선거구'.padEnd(10)}${'비례대표'.padEnd(8)}\n`;
+  text += `${'정당'.padEnd(6)}${'단순다수'.padEnd(8)}${'절대다수'.padEnd(8)}${'블록투표'.padEnd(10)}${'비례대표'.padEnd(8)}\n`;
   parties.forEach((p, i) => {
-    text += `${p.name.padEnd(6)}${(fptp.seats[i]+'석').padEnd(8)}${(majority.seats[i]+'석').padEnd(8)}${(multi.seats[i]+'석').padEnd(10)}${(pr.seats[i]+'석').padEnd(8)}\n`;
+    const mpS = multiPlurality ? multiPlurality.seats[i] : 0;
+    text += `${p.name.padEnd(6)}${(fptp.seats[i]+'석').padEnd(8)}${(majority.seats[i]+'석').padEnd(8)}${(mpS+'석').padEnd(10)}${(pr.seats[i]+'석').padEnd(8)}\n`;
   });
   text += `\n생성: ${new Date().toLocaleString('ko-KR')}`;
 
