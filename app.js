@@ -145,11 +145,11 @@ const SYSTEM_DESCS = {
       '소선거구 3개를 묶어 중선거구 1개(3석)로 운영',
       '2·3위 정당도 의석을 얻을 가능성이 있음',
     ],
-    rightTitle: '단순다수 (블록투표)',
+    rightTitle: '단순다수대표제',
     rightItems: [
-      '각 중선거구에서 <strong>득표 상위 3개 정당이 각 1석</strong> 획득',
-      '4위 이하 정당은 의석을 얻기 어려움',
-      '득표율에 비례하지 않아 전략적 공천이 중요',
+      '각 중선거구에서 <strong>득표수 상위 3명의 후보</strong>가 당선',
+      '소수 정당 후보도 2~3위로 당선될 가능성이 있음',
+      '득표율 대비 의석 비례성은 소선거구제보다 다소 높음',
     ],
   },
   pr: {
@@ -164,20 +164,6 @@ const SYSTEM_DESCS = {
       '정당 득표율에 <strong>비례</strong>하여 의석 배분',
       '소수 정당도 득표율만큼 의석 획득 가능',
       '<strong>봉쇄조항</strong> 미달 정당은 배분에서 제외',
-    ],
-  },
-  local: {
-    leftTitle: '중선거구제 (기초의회)',
-    leftItems: [
-      '한 선거구에서 <strong>여러 명</strong> 선출 (보통 2~4명)',
-      '유권자는 후보자 <strong>1명</strong>에게만 투표',
-      '득표 순위 N위까지 당선 — 같은 정당 후보끼리도 경쟁',
-    ],
-    rightTitle: '단순다수대표제 (득표 순위)',
-    rightItems: [
-      '정당 공천 시 <strong>몇 명을 낼 것인가</strong>가 핵심 전략',
-      '후보를 너무 많이 내면 표가 분산되어 공멸 위험',
-      '후보를 너무 적게 내면 표가 남아도 의석 손실',
     ],
   },
   mixed: {
@@ -226,11 +212,11 @@ const SCENARIO_DESCS = {
   },
   D: {
     label: '극단 분산형',
-    point: '4당이 25~28%로 거의 같은 표를 나눕니다. 소선거구제와 중대선거구제의 의석 수 차이가 가장 두드러지는 시나리오입니다. 각 선거구에서 1위만 당선되는 소선거구제와, 상위 3명이 당선되는 블록투표를 비교해보세요. 어떤 정당이 "좁은 선거구에서 늘 2위"였는데 "넓은 선거구에서 드디어 당선"되나요?',
+    point: '4당이 25~28%로 거의 같은 표를 나눕니다. 소선거구제와 중대선거구제의 의석 수 차이가 가장 두드러지는 시나리오입니다. 각 선거구에서 1위만 당선되는 소선거구제와, 상위 3명이 당선되는 중대선거구 단순다수를 비교해보세요. 어떤 정당이 "좁은 선거구에서 늘 2위"였는데 "넓은 선거구에서 드디어 당선"되나요?',
   },
   E: {
     label: '2016 총선 데이터',
-    point: 'A당(새누리 계열) 35%, B당(민주) 32%, C당(국민의당) 26%, D당(정의당) 7%. C당이 26%를 받았지만 소선거구에서 의석을 거의 못 얻은 실제 상황입니다. 중대선거구 블록투표였다면 C당 의석이 얼마나 달라졌을지 확인해보세요.',
+    point: 'A당(새누리 계열) 35%, B당(민주) 32%, C당(국민의당) 26%, D당(정의당) 7%. C당이 26%를 받았지만 소선거구에서 의석을 거의 못 얻은 실제 상황입니다. 중대선거구제 단순다수였다면 C당 의석이 얼마나 달라졌을지 확인해보세요.',
   },
   F: {
     label: '2020 총선 데이터',
@@ -253,7 +239,7 @@ const SYSTEM_QUESTIONS = {
     '결선을 거치면 당선자의 지지율이 어떻게 달라지는가?',
   ],
   'multi-plurality': [
-    '블록투표와 비례배분(동트)의 결과를 비교해보자. 무엇이 다른가?',
+    '중대선거구 단순다수와 비례배분(동트)의 결과를 비교해보자. 무엇이 다른가?',
     '상위 3당이 각 1석씩 가져가는 방식은 공정한가?',
     '4위 정당(D당)의 의석이 왜 0이 될 수 있는가?',
     '어떤 정당이 가장 전략적으로 이득을 볼 수 있는가?',
@@ -263,13 +249,6 @@ const SYSTEM_QUESTIONS = {
     '봉쇄조항을 3%로 적용하면 어떤 변화가 생기는가?',
     '소수 정당(D당)의 대표성이 다른 제도에 비해 얼마나 높아졌는가?',
     '"최대잔여 방식"과 "동트 방식"에서 결과가 달라지는 경우는?',
-  ],
-  local: [
-    '같은 정당 후보끼리 경쟁하면 어떤 문제가 생기는가?',
-    '각 정당은 몇 명의 후보를 내는 것이 유리했는가?',
-    '소수 정당(C당)이 후보를 1명만 내서 당선된 이유는?',
-    'D당은 표를 얻었지만 왜 한 석도 얻지 못했는가?',
-    '득표수가 많은 정당이 반드시 의석도 많이 얻는가?',
   ],
   mixed: [
     '지역구 결과와 비례 결과가 어떻게 다른가?',
@@ -516,6 +495,8 @@ function calculateMajorityRunoff() {
   const n = state.numParties;
   const seats = new Array(n).fill(0);
   const districtResults = [];
+  let totalVotes = 0;
+  let totalWastedVotes = 0;
 
   state.candidateDistricts.forEach((district, di) => {
     const ranked = district.candidates
@@ -524,6 +505,7 @@ function calculateMajorityRunoff() {
       .sort((a, b) => b.votes - a.votes || a.partyIdx - b.partyIdx);
 
     const distTotal = ranked.reduce((a, c) => a + c.votes, 0);
+    totalVotes += distTotal;
     if (!ranked.length) return;
 
     const topPct = distTotal > 0 ? (ranked[0].votes / distTotal * 100) : 0;
@@ -531,6 +513,7 @@ function calculateMajorityRunoff() {
 
     if (topPct > 50) {
       winnerPartyIdx = ranked[0].partyIdx;
+      totalWastedVotes += (distTotal - ranked[0].votes);
     } else {
       needRunoff = true;
       const f1 = ranked[0], f2 = ranked[1] || ranked[0];
@@ -549,6 +532,9 @@ function calculateMajorityRunoff() {
       });
 
       winnerPartyIdx = v1 >= v2 ? f1.partyIdx : f2.partyIdx;
+      const winnerVotes = v1 >= v2 ? v1 : v2;
+      totalWastedVotes += (distTotal - winnerVotes);
+
       runoffDetail = { finalist1: f1.partyIdx, finalist2: f2.partyIdx,
         finalist1Name: f1.name, finalist2Name: f2.name, votes1: v1, votes2: v2, transfers };
     }
@@ -559,7 +545,8 @@ function calculateMajorityRunoff() {
 
   const directCount = districtResults.filter(d => !d.needRunoff).length;
   const runoffCount = districtResults.filter(d => d.needRunoff).length;
-  return { seats, districtResults, wastedPct: 0, method: 'majority', directCount, runoffCount };
+  const wastedPct = totalVotes > 0 ? (totalWastedVotes / totalVotes * 100) : 0;
+  return { seats, districtResults, wastedPct, method: 'majority', directCount, runoffCount };
 }
 
 /**
@@ -571,6 +558,8 @@ function calculateBlockVoting() {
   const seatsPerMD = 3;
   const seats = new Array(n).fill(0);
   const mdResults = [];
+  let totalVotes = 0;
+  let totalWastedVotes = 0;
 
   for (let md = 0; md < 4; md++) {
     const districtIndices = [md * 3, md * 3 + 1, md * 3 + 2];
@@ -595,10 +584,16 @@ function calculateBlockVoting() {
     allCandidates.forEach(c => { partyTotals[c.partyIdx] += c.votes; });
     const avgPct = partyTotals.map(t => t / 3);
 
+    const mdTotal = allCandidates.reduce((acc, c) => acc + c.votes, 0);
+    const mdWasted = allCandidates.slice(seatsPerMD).reduce((acc, c) => acc + c.votes, 0);
+    totalVotes += mdTotal;
+    totalWastedVotes += mdWasted;
+
     mdResults.push({ mdIdx: md, districtIndices, allCandidates, seats: mdSeats, avgPct });
   }
 
-  return { seats, mdResults, method: 'block-voting' };
+  const wastedPct = totalVotes > 0 ? (totalWastedVotes / totalVotes * 100) : 0;
+  return { seats, mdResults, wastedPct, method: 'multi-plurality' };
 }
 
 /**
@@ -646,10 +641,12 @@ function calculateMixed() {
   // 지역구: 앞 consCount개 선거구에서 FPTP
   const consSeats = new Array(n).fill(0);
   const consResults = [];
+  let totalConsWasted = 0;
   for (let di = 0; di < consCount; di++) {
     const d = state.districts[di];
     const winIdx = d.reduce((best, v, i) => v > d[best] ? i : best, 0);
     consSeats[winIdx]++;
+    totalConsWasted += (100 - d[winIdx]);
     consResults.push({ districtIdx: di, votes: [...d], winnerIdx: winIdx, needRunoff: false });
   }
 
@@ -663,7 +660,8 @@ function calculateMixed() {
     : new Array(n).fill(0);
 
   const seats = consSeats.map((c, i) => c + prSeats[i]);
-  return { seats, consSeats, prSeats, consResults, consCount, prCount, method: 'mixed' };
+  const wastedPct = totalSeats > 0 ? (totalConsWasted / totalSeats) : 0;
+  return { seats, consSeats, prSeats, consResults, consCount, prCount, wastedPct, method: 'mixed' };
 }
 
 /**
@@ -766,7 +764,6 @@ function wastedVisBar(wonPct) {
   const w = Math.round(wonPct);
   const l = 100 - w;
   return `<div class="wasted-vis">
-    <div class="wasted-vis-label">당선표 vs ${tip('사표', '낙선자에게 간 표. 의석에 반영되지 않습니다.')}</div>
     <div class="wasted-vis-bar">
       <div class="wasted-vis-won" style="width:${w}%">${w}%</div>
       <div class="wasted-vis-lost">사표 ${l}%</div>
@@ -866,7 +863,7 @@ function renderCandidateDistrictCard(name, ranked, parties, seats, borderColor, 
   const cutoffAt = runoffAdvance ? 2 : seats;
 
   const extraClass = runoffAdvance ? ' needs-runoff' : '';
-  let html = `<div class="district-card${extraClass}" style="border-color:${cardColor}">
+  let html = `<div class="district-card${extraClass}" style="border-color:${cardColor}; --winner-color:${cardColor}">
     <div class="district-card-bg" style="background:${cardColor}"></div>
     <div class="district-card-title">${name}</div>`;
 
@@ -914,8 +911,6 @@ function renderFPTP(result) {
   });
   html += `</div>`;
 
-  html += wastedVisBar(100 - wastedPct);
-
   html += `<div class="section-title">💺 의석 배분</div>`;
   html += renderSeatChart(seats, parties);
   html += renderResultTable(seats, parties, seats.reduce((a, b) => a + b, 0));
@@ -957,7 +952,7 @@ function renderMajority(result) {
       html += renderCandidateDistrictCard(dr.name, dr.ranked, parties, 1, 'var(--warning)', {
         cutoffLabel: '결선 진출',
         cutoffVariant: 'runoff',
-        headerBadge: `<div class="district-winner-badge" style="background:var(--warning);color:#000">⚡ 결선</div>`,
+        headerBadge: `<div class="district-winner-badge" style="background:var(--warning);color:#fff;text-shadow:0 1px 1px rgba(0,0,0,0.1)">⚡ 결선</div>`,
         runoffAdvance: true,
       });
     }
@@ -1054,17 +1049,17 @@ function renderMDMap(mdResults, mdColors, method, highlightWinner = false) {
       Array(s).fill(`<span class="md-dot" style="background:${parties[pi].color};border:1.5px solid rgba(0,0,0,0.25)" title="${parties[pi].name}"></span>`)
     ).join('');
     const seatText = md.seats.map((s, pi) => s > 0
-      ? `<span style="color:#000;font-weight:700;display:inline-flex;align-items:center;gap:3px">
-           <span style="width:10px;height:10px;border-radius:50%;background:${parties[pi].color};display:inline-block;border:1px solid rgba(0,0,0,0.2)"></span>
+      ? `<span style="color:#fff;font-weight:700;display:inline-flex;align-items:center;gap:3px;text-shadow:0 1px 2px rgba(0,0,0,0.15)">
+           <span style="width:10px;height:10px;border-radius:50%;background:${parties[pi].color};display:inline-block;border:1px solid rgba(255,255,255,0.4)"></span>
            ${parties[pi].name} ${s}석
          </span>`
-      : '').filter(Boolean).join('<span style="color:rgba(0,0,0,0.4)"> · </span>');
+      : '').filter(Boolean).join('<span style="color:rgba(255,255,255,0.5)"> · </span>');
 
     html += `
       <div class="md-section" style="border-color:${mdColor}">
         <div class="md-section-header" style="background:${mdColor}">
-          <span style="color:#000">중선거구 ${md.mdIdx + 1}
-            <small style="font-weight:400;margin-left:4px">(제${md.districtIndices.map(i=>i+1).join('·')}구)</small>
+          <span style="color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.15)">중선거구 ${md.mdIdx + 1}
+            <small style="font-weight:400;margin-left:4px;color:rgba(255,255,255,0.85)">(제${md.districtIndices.map(i=>i+1).join('·')}구)</small>
           </span>
           <div class="md-section-seats">
             <div class="md-dot-row">${seatDots}</div>
@@ -1213,8 +1208,8 @@ function renderMDCandidateSection(md, mdColor, seatsPerMD, parties) {
 
   // 헤더: 의석 배분 요약
   const seatText = md.seats.map((s, pi) => s > 0
-    ? `<span style="color:#000;font-weight:700">${colorDot(parties[pi]?.color, 10)} ${parties[pi]?.name} ${s}석</span>`
-    : '').filter(Boolean).join('<span style="color:rgba(0,0,0,0.4)"> · </span>');
+    ? `<span style="color:#fff;font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.15)">${colorDot(parties[pi]?.color, 10)} ${parties[pi]?.name} ${s}석</span>`
+    : '').filter(Boolean).join('<span style="color:rgba(255,255,255,0.5)"> · </span>');
 
   const distNames = md.districtIndices
     .filter(di => di < state.candidateDistricts.length)
@@ -1223,8 +1218,8 @@ function renderMDCandidateSection(md, mdColor, seatsPerMD, parties) {
 
   let html = `<div class="md-section" style="border-color:${mdColor}">
     <div class="md-section-header" style="background:${mdColor}">
-      <span style="color:#000">중선거구 ${md.mdIdx + 1}
-        <small style="font-weight:400;margin-left:5px">(${distNames})</small>
+      <span style="color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.15)">중선거구 ${md.mdIdx + 1}
+        <small style="font-weight:400;margin-left:5px;color:rgba(255,255,255,0.85)">(${distNames})</small>
       </span>
       <div>${seatText}</div>
     </div>
@@ -1257,7 +1252,7 @@ function renderMultiPlurality(result) {
   const { seats, mdResults } = result;
   const container = document.getElementById('multi-plurality-results');
   const parties = state.parties;
-  const mdColors = ['#38bdf8', '#a78bfa', '#34d399', '#fb923c'];
+  const mdColors = ['#0284c7', '#7c3aed', '#059669', '#ea580c'];
   let html = '';
 
   html += `<div class="section-title">📍 중선거구별 후보자 득표 순위 (소선거구 3개 묶음 × 3석)</div>`;
@@ -1277,105 +1272,7 @@ function renderMultiPlurality(result) {
   container.innerHTML = html;
 }
 
-/* ─────────────────────────────────────────────
-   기초의회 — 계산 / 렌더링 / 편집 UI
-───────────────────────────────────────────── */
 
-/**
- * 기초의회 계산 — 소선거구 2개를 묶어 중선거구 1개(2석) 구성
- * FPTP와 동일한 후보자 데이터(candidateDistricts)를 공유
- * 12개 소선거구 → 6개 중선거구, 각 2석 (총 12석)
- */
-function calculateLocalCouncil() {
-  const n = state.numParties;
-  const seatsPerMD = 2;
-  const numMD = 6;
-  const partySeatTotals = new Array(n).fill(0);
-  const partyVoteTotals = new Array(n).fill(0);
-  const mdResults = [];
-
-  for (let md = 0; md < numMD; md++) {
-    const di1 = md * 2, di2 = md * 2 + 1;
-    const districtIndices = [di1, di2];
-    const allCandidates = [];
-
-    districtIndices.forEach(di => {
-      if (di < state.candidateDistricts.length) {
-        state.candidateDistricts[di].candidates
-          .filter(c => c.partyIdx < n)
-          .forEach(c => {
-            allCandidates.push({ ...c, fromDistrict: di, fromDistrictName: state.candidateDistricts[di].name });
-            partyVoteTotals[c.partyIdx] += c.votes;
-          });
-      }
-    });
-
-    allCandidates.sort((a, b) => b.votes - a.votes || a.partyIdx - b.partyIdx);
-
-    const mdSeats = new Array(n).fill(0);
-    allCandidates.slice(0, seatsPerMD).forEach(c => { mdSeats[c.partyIdx]++; });
-    mdSeats.forEach((s, i) => { partySeatTotals[i] += s; });
-
-    mdResults.push({ mdIdx: md, districtIndices, allCandidates, seats: mdSeats, seatsPerMD });
-  }
-
-  const totalSeats = numMD * seatsPerMD;
-  const totalVotes = partyVoteTotals.reduce((a, b) => a + b, 0);
-  return { mdResults, partySeatTotals, partyVoteTotals, totalSeats, totalVotes,
-           seats: partySeatTotals, method: 'local' };
-}
-
-/**
- * 기초의회 결과 렌더링
- */
-function renderLocalCouncil(result) {
-  const container = document.getElementById('local-results');
-  if (!container) return;
-  const parties = state.parties;
-  const { mdResults, partySeatTotals, partyVoteTotals, totalSeats, totalVotes } = result;
-  const mdColors = ['#38bdf8', '#a78bfa', '#34d399', '#fb923c', '#22c55e', '#f97316'];
-  let html = '';
-
-  // 6개 중선거구 (소선거구 2개씩 묶음)
-  html += `<div class="section-title">📍 중선거구별 후보자 득표 순위
-    <span style="font-size:0.75rem;font-weight:400;color:var(--text-muted);margin-left:8px">(소선거구 2개 묶음 × 2석 = 총 ${totalSeats}석)</span>
-  </div>`;
-  mdResults.forEach((md, i) => {
-    html += renderMDCandidateSection(md, mdColors[i % mdColors.length], 2, parties);
-  });
-
-  html += `<div class="section-title">💺 정당별 의석 · 득표 요약</div>`;
-  html += renderSeatChart(partySeatTotals, parties);
-
-  html += `<table class="result-table"><thead><tr>
-    <th>정당</th><th>총 득표수</th><th>득표율</th><th>의석 수</th><th>의석률</th><th>차이</th>
-  </tr></thead><tbody>`;
-  parties.forEach((p, i) => {
-    if (!partyVoteTotals[i] && !partySeatTotals[i]) return;
-    const vp  = totalVotes > 0 ? (partyVoteTotals[i] / totalVotes * 100) : 0;
-    const sp  = totalSeats > 0 ? (partySeatTotals[i] / totalSeats * 100) : 0;
-    const diff = sp - vp;
-    const dCls = diff > 1 ? 'diff-positive' : diff < -1 ? 'diff-negative' : 'diff-zero';
-    html += `<tr>
-      <td><div class="party-cell">${colorDot(p.color)}${p.name}</div></td>
-      <td>${partyVoteTotals[i].toLocaleString()}표</td>
-      <td>${fmt(vp)}%</td>
-      <td><strong>${partySeatTotals[i]}석</strong></td>
-      <td>${fmt(sp)}%</td>
-      <td class="${dCls}">${diff > 0 ? '+' : ''}${fmt(diff)}%p</td>
-    </tr>`;
-  });
-  html += `</tbody></table>`;
-
-  html += `<div class="interpretation"><ul>
-    <li>소선거구 2개를 묶어 중선거구로 구성 — <strong>소선거구제와 동일한 후보자</strong>가 경쟁합니다.</li>
-    <li>소선거구제에서는 1위만 당선 → 중선거구제에서는 <strong>2위도 당선</strong>될 수 있습니다.</li>
-    <li>같은 정당 후보끼리 경쟁 — "몇 명을 공천할 것인가"가 핵심 전략입니다.</li>
-    <li>이것이 우리나라 기초의회 지역구 선거의 실제 방식입니다.</li>
-  </ul></div>`;
-
-  container.innerHTML = html;
-}
 
 /**
  * 후보자 선거구 편집 UI — 12개 소선거구 후보자 편집 (FPTP·절대다수·블록투표·기초의회 공통)
@@ -1485,7 +1382,7 @@ function calculateMMP() {
   }
 
   const seats = consSeats.map((c, i) => c + prFinal[i]);
-  return { seats, consSeats, prFinal, idealSeats, linkedDemand, scaledDemand, districtResults, consCount, prPool, method: 'mmp' };
+  return { seats, consSeats, prFinal, idealSeats, linkedDemand, scaledDemand, districtResults, consCount, prPool, wastedPct: 0, method: 'mmp' };
 }
 
 /**
@@ -1641,7 +1538,6 @@ function renderMMP(result) {
 function getActiveTabId() {
   if (state.showCompare) return 'tab-compare';
   const map = {
-    local:            'tab-local',
     fptp:             'tab-fptp',
     majority:         'tab-majority',
     'multi-plurality':'tab-multi-plurality',
@@ -1654,10 +1550,9 @@ function getActiveTabId() {
 
 // 시스템 키 → 표시 이름
 const SYSTEM_NAMES = {
-  local:            '기초의회 선거 (중선거구 + 단순다수 / 후보자 중심)',
   fptp:             '소선거구제 + 단순다수대표제',
   majority:         '소선거구제 + 절대다수대표제',
-  'multi-plurality':'중대선거구제 (단순다수)',
+  'multi-plurality':'중대선거구제 단순다수',
   pr:               '비례대표제',
   mixed:            '병립형 혼합제',
   mmp:              '연동형 혼합제',
@@ -1719,8 +1614,8 @@ function updateActiveTab() {
   const mixedCard = document.getElementById('card-mixed-settings');
   if (mixedCard) mixedCard.classList.toggle('hidden', state.activeSystem !== 'mixed' && state.activeSystem !== 'mmp');
 
-  // 후보자 편집 카드 (소선거구·절대다수·블록투표·기초의회·연동형 공통)
-  const candidateSystems = ['fptp', 'majority', 'multi-plurality', 'local'];
+  // 후보자 편집 카드 (소선거구·절대다수·중대선거구 단순다수·연동형 공통)
+  const candidateSystems = ['fptp', 'majority', 'multi-plurality'];
   const showCandCard = candidateSystems.includes(state.activeSystem) || state.activeSystem === 'mmp';
   const candCard = document.getElementById('card-candidate-settings');
   if (candCard) {
@@ -1761,7 +1656,7 @@ function updateContextQuestions() {
 
 function renderCompare(results) {
   const container = document.getElementById('compare-results');
-  const { fptp, majority, pr } = results;
+  const { fptp, majority, pr, mixed, mmp } = results;
   const multiPlurality = results['multi-plurality'];
   const parties = state.parties;
   const totalSeats = state.totalSeats;
@@ -1769,12 +1664,15 @@ function renderCompare(results) {
   const systems = [
     { key: 'fptp',             label: '소선거구\n단순다수',     result: fptp },
     { key: 'majority',         label: '소선거구\n절대다수',     result: majority },
-    { key: 'multi-plurality',  label: '중대선거구\n블록투표',   result: multiPlurality },
+    { key: 'multi-plurality',  label: '중대선거구제\n단순다수', result: multiPlurality },
     { key: 'pr',               label: '비례대표제',             result: pr },
+    { key: 'mixed',            label: '병립형\n혼합제',         result: mixed },
+    { key: 'mmp',              label: '연동형\n혼합제',         result: mmp },
   ];
 
   let html = '<div class="compare-grid">';
   systems.forEach(sys => {
+    if (!sys.result) return;
     const { seats } = sys.result;
     html += `<div class="compare-card">
       <div class="compare-card-title">${sys.label.replace('\n', ' ')}</div>`;
@@ -1792,17 +1690,20 @@ function renderCompare(results) {
   });
   html += '</div>';
 
-  // 비교 종합 테이블 (5개 제도)
+  // 비교 종합 테이블 (6개 제도)
   html += `<div class="section-title">📊 제도별 의석 수 종합 비교</div>`;
   html += `<table class="result-table">
     <thead><tr>
       <th>정당</th><th>득표율</th>
       <th>소선거구<br>단순다수</th><th>소선거구<br>절대다수</th>
-      <th>중대선거구<br>블록투표</th><th>비례대표제</th>
+      <th>중대선거구제<br>단순다수</th><th>비례대표제</th>
+      <th>병립형<br>혼합제</th><th>연동형<br>혼합제</th>
     </tr></thead><tbody>`;
   parties.forEach((p, pi) => {
     const vp = parseFloat(p.vote) || 0;
     const mpSeats = multiPlurality ? multiPlurality.seats[pi] : '—';
+    const mixedSeats = mixed ? mixed.seats[pi] : '—';
+    const mmpSeats = mmp ? mmp.seats[pi] : '—';
     html += `<tr>
       <td><div class="party-cell">${colorDot(p.color)}${p.name}</div></td>
       <td>${fmt(vp)}%</td>
@@ -1810,15 +1711,17 @@ function renderCompare(results) {
       <td>${majority.seats[pi]}석 <small>(${fmt(seatPct(majority.seats[pi], totalSeats))}%)</small></td>
       <td>${mpSeats}석 <small>(${multiPlurality ? fmt(seatPct(mpSeats, totalSeats)) : '—'}%)</small></td>
       <td>${pr.seats[pi]}석 <small>(${fmt(seatPct(pr.seats[pi], totalSeats))}%)</small></td>
+      <td>${mixedSeats}석 <small>(${mixed ? fmt(seatPct(mixedSeats, totalSeats)) : '—'}%)</small></td>
+      <td>${mmpSeats}석 <small>(${mmp ? fmt(seatPct(mmpSeats, totalSeats)) : '—'}%)</small></td>
     </tr>`;
   });
   html += `</tbody></table>`;
 
   html += `<div class="interpretation"><ul>
     <li>같은 유권자 분포라도 소선거구제에서는 1위 정당이 더 많은 의석을 얻을 수 있습니다.</li>
-    <li>비례대표제에서는 득표율과 의석률이 가장 비슷하게 나타납니다.</li>
-    <li>중대선거구제는 소선거구제와 비례대표제의 중간적 성격을 보일 수 있습니다.</li>
-    <li>절대다수대표제에서는 결선투표 과정에서 2순위 선호가 중요해집니다.</li>
+    <li>비례대표제에서는 정당 득표율에 따라 정합적으로 의석이 배분되므로 대표성지표(별점)가 높습니다.</li>
+    <li>병립형 혼합제는 지역구(다수대표제)와 비례의석이 <strong>독립적(병립)</strong>으로 계산되어 거대 정당에 유리할 수 있습니다.</li>
+    <li>연동형 혼합제는 득표율에 따른 이상적 의석에서 지역구 당선 의석을 빼고 남은 만큼을 비례의석으로 채우므로, 득표율↔의석률 격차가 좁혀집니다.</li>
   </ul></div>`;
 
   container.innerHTML = html;
@@ -1895,13 +1798,14 @@ function renderRightPanel(activeResult) {
   // 사표율 (있을 때만)
   if (wastedPct !== null) {
     const wastedPeople = Math.round(wastedPct);
-    dhtml += `<div class="distortion-item">
+    dhtml += `<div class="distortion-item" style="margin-bottom:2px">
       <span class="distortion-label">사표율 <small>(낙선자 표 비율)</small></span>
       <span class="distortion-value ${wastedPct > 50 ? 'text-danger' : wastedPct > 30 ? 'text-warning' : 'text-success'}">
         ${fmt(wastedPct)}%
       </span>
     </div>`;
-    dhtml += `<div style="font-size:0.72rem;color:var(--text-muted);margin:-4px 0 6px;padding:0 2px">
+    dhtml += wastedVisBar(100 - wastedPct);
+    dhtml += `<div style="font-size:0.72rem;color:var(--text-muted);margin:4px 0 8px;padding:0 2px;line-height:1.3">
       → 유권자 100명 중 약 ${wastedPeople}명의 표가 의석에 반영되지 않음
     </div>`;
   }
@@ -1939,7 +1843,7 @@ function runSimulation() {
   });
 
   // 비례 기반 시스템은 득표율 합계 100% 필요, 후보자 기반은 불필요
-  const candidateSystems = ['fptp', 'majority', 'multi-plurality', 'local'];
+  const candidateSystems = ['fptp', 'majority', 'multi-plurality'];
   const needsVoteValidation = !candidateSystems.includes(state.activeSystem) || state.showCompare;
   if (needsVoteValidation && !validateVotes()) {
     showToast('⚠️ 비례 계산을 위해 득표율 합계가 100%여야 합니다.', 3000);
@@ -1954,8 +1858,7 @@ function runSimulation() {
   const pr             = calculatePR();
   const mixed          = calculateMixed();
   const mmp            = calculateMMP();
-  const local          = calculateLocalCouncil();
-  state.results = { fptp, majority, 'multi-plurality': multiPlurality, pr, mixed, mmp, local };
+  state.results = { fptp, majority, 'multi-plurality': multiPlurality, pr, mixed, mmp };
 
   // 렌더링 (모든 패널을 백그라운드 계산)
   renderFPTP(fptp);
@@ -1963,7 +1866,6 @@ function runSimulation() {
   renderMultiPlurality(multiPlurality);
   renderMixed(mixed);
   renderMMP(mmp);
-  renderLocalCouncil(local);
   renderPR(pr);
   renderCompare(state.results);
 
@@ -1982,7 +1884,7 @@ function runSimulation() {
 
 function copyResults() {
   if (!state.results) { showToast('먼저 시뮬레이션을 실행하세요.'); return; }
-  const { fptp, majority, pr } = state.results;
+  const { fptp, majority, pr, mixed, mmp } = state.results;
   const multiPlurality = state.results['multi-plurality'];
   const parties = state.parties;
   const totalSeats = state.totalSeats;
@@ -1992,11 +1894,14 @@ function copyResults() {
   text += `■ 득표율\n`;
   parties.forEach(p => { text += `  ${p.name}: ${fmt(p.vote)}%\n`; });
   text += `\n■ 의석 배분 결과\n`;
-  text += `${'정당'.padEnd(6)}${'단순다수'.padEnd(8)}${'절대다수'.padEnd(8)}${'블록투표'.padEnd(10)}${'비례대표'.padEnd(8)}\n`;
+  text += `${'정당'.padEnd(6)}${'소단'.padEnd(8)}${'소절'.padEnd(8)}${'중단'.padEnd(12)}${'비례'.padEnd(8)}${'병립'.padEnd(8)}${'연동'.padEnd(8)}\n`;
   parties.forEach((p, i) => {
     const mpS = multiPlurality ? multiPlurality.seats[i] : 0;
-    text += `${p.name.padEnd(6)}${(fptp.seats[i]+'석').padEnd(8)}${(majority.seats[i]+'석').padEnd(8)}${(mpS+'석').padEnd(10)}${(pr.seats[i]+'석').padEnd(8)}\n`;
+    const mixedS = mixed ? mixed.seats[i] : 0;
+    const mmpS = mmp ? mmp.seats[i] : 0;
+    text += `${p.name.padEnd(6)}${(fptp.seats[i]+'석').padEnd(8)}${(majority.seats[i]+'석').padEnd(8)}${(mpS+'석').padEnd(12)}${(pr.seats[i]+'석').padEnd(8)}${(mixedS+'석').padEnd(8)}${(mmpS+'석').padEnd(8)}\n`;
   });
+  text += `\n* 범례: 소단(소선거구 단순다수), 소절(소선거구 절대다수), 중단(중대선거구제 단순다수), 비례(비례대표제), 병립(병립형 혼합제), 연동(연동형 혼합제)\n`;
   text += `\n생성: ${new Date().toLocaleString('ko-KR')}`;
 
   navigator.clipboard.writeText(text).then(() => {
