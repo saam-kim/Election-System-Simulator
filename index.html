@@ -16,7 +16,7 @@
   </div>
   <div class="header-meta">
     <span class="meta-item">🏛 국가: <strong id="display-nation">세종국</strong></span>
-    <span class="meta-item">💺 전체 의석: <strong id="display-seats">12석</strong></span>
+    <span class="meta-item">💺 전체 의석: <strong id="display-seats">9석</strong></span>
     <span class="meta-item">🎯 정당 수: <strong id="display-parties">4개</strong></span>
     <span class="meta-item">📋 현재 제도: <strong id="display-system">—</strong></span>
   </div>
@@ -47,7 +47,7 @@
           <label>국가명</label>
           <input type="text" id="input-nation" value="세종국" maxlength="10" />
         </div>
-        <div class="form-row">
+        <div class="form-row" style="display:none">
           <label>전체 의석 수</label>
           <div class="btn-group-small">
             <button class="btn-opt" data-seats="5">5</button>
@@ -133,12 +133,12 @@
           <button class="btn-opt" data-mixed-cons="10">10석</button>
         </div>
       </div>
-      <p class="hint" id="mixed-ratio-desc">지역구 8석 + 비례 4석 = 총 12석</p>
+      <p class="hint" id="mixed-ratio-desc">지역구 5석 + 비례 4석 = 총 9석</p>
     </section>
 
     <!-- 후보자 설정 (FPTP·절대다수·중대선거구제 단순다수 공통) -->
     <section class="card hidden" id="card-candidate-settings">
-      <h2 class="card-title">후보자 설정 (12개 소선거구)</h2>
+      <h2 class="card-title">후보자 설정 (9개 소선거구)</h2>
       <p class="hint">후보자 이름·소속 정당·득표수를 수정하세요. 모든 후보자 기반 선거제도에 공통 적용됩니다.</p>
       <div id="candidate-district-inputs"></div>
     </section>
@@ -286,14 +286,6 @@
       <h2 class="card-title">📐 대표성 지표</h2>
       <div id="distortion-content">
         <p class="placeholder-text">결과 없음</p>
-      </div>
-    </section>
-
-    <!-- 수업 발문 카드 (맥락 연동, 항상 표시) -->
-    <section class="card" id="card-questions">
-      <h2 class="card-title">지금 물어볼 수 있는 질문</h2>
-      <div id="question-list">
-        <!-- JS로 제도별 발문 자동 채움 -->
       </div>
     </section>
 

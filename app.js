@@ -29,12 +29,9 @@ const DISTRICTS_DEFAULT = [
   [36, 31, 23, 10],  // D7    결선 (A vs B)
   [25, 51, 18,  6],  // D8  ★ B당 51% → 1차 당선
   [39, 27, 24, 10],  // D9    결선 (A vs B)
-  [30, 28, 32, 10],  // D10   결선 (C vs A)
-  [44, 30, 16, 10],  // D11   결선 (A vs B)
-  [53, 28, 12,  7],  // D12 ★ A당 53% → 1차 당선
 ];
 
-// ── 소선거구 후보자 데이터 (12개 선거구 × 4정당, 득표수 기반) ──
+// ── 소선거구 후보자 데이터 (9개 선거구 × 4정당, 득표수 기반) ──
 // 득표수는 DISTRICTS_DEFAULT 비율 × 10 (선거구당 유권자 1,000명 기준)
 const CANDIDATE_DISTRICTS_DEFAULT = [
   { name:'제1선거구',  candidates:[{name:'김민준',partyIdx:0,votes:520},{name:'김지수',partyIdx:1,votes:280},{name:'김서연',partyIdx:2,votes:130},{name:'김현진',partyIdx:3,votes:70}]},
@@ -46,9 +43,6 @@ const CANDIDATE_DISTRICTS_DEFAULT = [
   { name:'제7선거구',  candidates:[{name:'오민수',partyIdx:0,votes:360},{name:'오준혁',partyIdx:1,votes:310},{name:'오서아',partyIdx:2,votes:230},{name:'오은진',partyIdx:3,votes:100}]},
   { name:'제8선거구',  candidates:[{name:'강지혜',partyIdx:0,votes:250},{name:'강수빈',partyIdx:1,votes:510},{name:'강태준',partyIdx:2,votes:180},{name:'강민호',partyIdx:3,votes:60}]},
   { name:'제9선거구',  candidates:[{name:'임태준',partyIdx:0,votes:390},{name:'임서아',partyIdx:1,votes:270},{name:'임기남',partyIdx:2,votes:240},{name:'임수연',partyIdx:3,votes:100}]},
-  { name:'제10선거구', candidates:[{name:'윤서아',partyIdx:0,votes:300},{name:'윤민준',partyIdx:1,votes:280},{name:'윤태양',partyIdx:2,votes:320},{name:'윤기남',partyIdx:3,votes:100}]},
-  { name:'제11선거구', candidates:[{name:'홍기남',partyIdx:0,votes:440},{name:'홍지수',partyIdx:1,votes:300},{name:'홍다은',partyIdx:2,votes:160},{name:'홍태환',partyIdx:3,votes:100}]},
-  { name:'제12선거구', candidates:[{name:'장수빈',partyIdx:0,votes:530},{name:'장예슬',partyIdx:1,votes:280},{name:'장민서',partyIdx:2,votes:120},{name:'장기남',partyIdx:3,votes:70}]},
 ];
 
 // ── 기초의회 기본 데이터 (레거시, 더 이상 사용 안 함) ──
@@ -276,18 +270,18 @@ const SYSTEM_QUESTIONS = {
 ───────────────────────────────────────────── */
 let state = {
   nation: '세종국',
-  totalSeats: 12,
+  totalSeats: 9,
   numParties: 4,
   prMethod: 'largest-remainder', // 'largest-remainder' | 'dhondt'
   threshold: 0,                  // 봉쇄조항 (%)
   parties: [],                   // { name, color, vote, ideology }
-  districts: [],                 // 12×n 배열 (각 선거구 정당별 득표율)
+  districts: [],                 // 9×n 배열 (각 선거구 정당별 득표율)
   results: null,                 // 계산 결과 캐시
   showDesc: true,                // 설명 카드 표시 여부
   activeSystem: 'fptp',          // 현재 선택된 선거제도
-  candidateDistricts: [],        // 12개 소선거구 후보자 데이터 (fptp·majority·블록투표·기초의회 공유)
+  candidateDistricts: [],        // 9개 소선거구 후보자 데이터 (fptp·majority·블록투표·기초의회 공유)
   showCompare: false,            // 전체 비교 모드
-  mixedConstituencySeats: 8,     // 병립형 지역구 의석 수 (나머지는 비례)
+  mixedConstituencySeats: 5,     // 병립형 지역구 의석 수 (나머지는 비례)
   activeScenario: null,          // 현재 선택된 시나리오 키 (A/B/C/D 또는 null)
 };
 
@@ -561,7 +555,7 @@ function calculateBlockVoting() {
   let totalVotes = 0;
   let totalWastedVotes = 0;
 
-  for (let md = 0; md < 4; md++) {
+  for (let md = 0; md < 3; md++) {
     const districtIndices = [md * 3, md * 3 + 1, md * 3 + 2];
     const allCandidates = [];
 
@@ -1610,9 +1604,9 @@ function updateActiveTab() {
   if (bannerEl) bannerEl.textContent = name;
   document.getElementById('display-system').textContent = name;
 
-  // 병립형 설정 카드
+  // 병립형 설정 카드 (지역구 5석, 비례 4석 고정이므로 항상 숨김)
   const mixedCard = document.getElementById('card-mixed-settings');
-  if (mixedCard) mixedCard.classList.toggle('hidden', state.activeSystem !== 'mixed' && state.activeSystem !== 'mmp');
+  if (mixedCard) mixedCard.classList.add('hidden');
 
   // 후보자 편집 카드 (소선거구·절대다수·중대선거구 단순다수·연동형 공통)
   const candidateSystems = ['fptp', 'majority', 'multi-plurality'];
@@ -1636,18 +1630,6 @@ function updateActiveTab() {
   }
 
   updateDescPanel();
-  updateContextQuestions();
-}
-
-/**
- * 현재 제도에 맞는 수업 발문을 오른쪽 패널에 표시
- */
-function updateContextQuestions() {
-  const qEl = document.getElementById('question-list');
-  if (!qEl) return;
-  const key = state.showCompare ? 'compare' : state.activeSystem;
-  const qs = SYSTEM_QUESTIONS[key] || SYSTEM_QUESTIONS['compare'];
-  qEl.innerHTML = '<ol>' + qs.map(q => `<li>${q}</li>`).join('') + '</ol>';
 }
 
 /* ─────────────────────────────────────────────
@@ -1740,15 +1722,16 @@ function renderRightPanel(activeResult) {
 
   // ── 의석 배분 요약 ──
   let shtml = renderSeatChart(seats, parties);
+  shtml += `<p style="font-size:0.7rem;color:var(--text-muted);margin:4px 0 10px 2px">* %p: 득표율 대비 의석률의 차이 (의석률 - 득표율)</p>`;
   parties.forEach((p, i) => {
     const sp   = seatPct(seats[i], totalSeats);
     const vp   = parseFloat(p.vote) || 0;
     const diff = sp - vp;
     const diffStr = diff > 0.5
-      ? `<span class="diff-positive">+${fmt(diff)}%p</span>`
+      ? `<span class="diff-positive" data-tip="득표율(${fmt(vp)}%)보다 의석률(${fmt(sp)}%)이 ${fmt(diff)}%p 많음">+${fmt(diff)}%p</span>`
       : diff < -0.5
-        ? `<span class="diff-negative">${fmt(diff)}%p</span>`
-        : `<span class="diff-zero">±0</span>`;
+        ? `<span class="diff-negative" data-tip="득표율(${fmt(vp)}%)보다 의석률(${fmt(sp)}%)이 ${fmt(Math.abs(diff))}%p 적음">${fmt(diff)}%p</span>`
+        : `<span class="diff-zero" data-tip="득표율과 의석률이 정확히 일치함">±0</span>`;
     shtml += `<div class="summary-party-row">
       ${colorDot(p.color)}
       <span class="summary-party-name">${p.name}</span>
@@ -1790,7 +1773,7 @@ function renderRightPanel(activeResult) {
   // 1위 정당 보너스
   dhtml += `<div class="distortion-item">
     <span class="distortion-label">1위 정당(${parties[topIdx].name}) 의석 보너스</span>
-    <span class="distortion-value ${bonus > 5 ? 'diff-positive' : bonus < -2 ? 'diff-negative' : 'diff-zero'}">
+    <span class="distortion-value ${bonus > 5 ? 'diff-positive' : bonus < -2 ? 'diff-negative' : 'diff-zero'}" data-tip="1위 정당의 의석률(${fmt(topSeatPct)}%)에서 득표율(${fmt(topVote)}%)을 뺀 차이">
       ${bonus > 0 ? '+' : ''}${fmt(bonus)}%p
     </span>
   </div>`;
